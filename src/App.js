@@ -95,7 +95,7 @@ const App = () => {
   return (
     <>
       <div className="top">
-        <p align="center"><h1>Traveling Salesman Problem</h1></p>
+        <p align="center"><h1>3-dimensional "Traveling Salesman Problem"</h1></p>
         <p>
           In this classical computing problem, a regional salesman plans a route which enables him/her to leave home in order to visit all <i>N</i> towns in the region while traveling the shortest possible distance.  The time complexity for my brute-force algorithm is "factorial" [<i>O</i>(<i>N</i>!)], which means that the  time required to do it for 10 towns will be 10 times longer than that for 9 towns, and the time required for 11 towns will be 11 times longer than that for 10, etc.  The algorithm is seemingly instantaneous for <i>N</i> &lt; 9 and usually stalls for <i>N</i> &gt; 11.
         </p>
