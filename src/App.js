@@ -71,7 +71,6 @@ const App = () => {
       newItin.unshift(n);
       newItin.push(n);
       console.log(newItin.join(''), distanceTot)
-      // console.log(newItin);
       if(distanceTot < newDistanceMin[0]) {
         setItin([newItin, ...itin]);
         setDistanceMin([distanceTot, ...newDistanceMin]);
@@ -97,12 +96,12 @@ const App = () => {
       <div className="top">
         <p align="center"><h1>3-dimensional "Traveling Salesman Problem"</h1></p>
         <p>
-          In this classical computing problem, a regional salesman plans a route which enables him/her to leave home in order to visit all <i>N</i> towns in the region while traveling the shortest possible distance.  The time complexity for my brute-force algorithm is "factorial" [<i>O</i>(<i>N</i>!)], which means that the  time required to do it for 10 towns will be 10 times longer than that for 9 towns, and the time required for 11 towns will be 11 times longer than that for 10, etc.  The algorithm is seemingly instantaneous for <i>N</i> &lt; 9 and usually stalls for <i>N</i> &gt; 11.
+          In this 3-d version of the classical NP-hard computing problem, a galactic salesman plans a route which enables him/her to leave home and visit all <i>N</i> planets in that portion of the galaxy, while traveling the shortest possible distance.  The time complexity for my brute-force algorithm is "factorial" [<i>O</i>(<i>N</i>!)], which means that the planning time required for 10 planets will be 10 times longer than that for 9 planets, and the time required for 11 planets will be 11 times longer than that for 10, etc.  The algorithm is seemingly instantaneous for <i>N</i> &lt; 9 and usually stalls for <i>N</i> &gt; 11.
         </p>
       </div>
       <div className="container">
         <div className="left">
-          <div>Select the<br/> number<br/> of towns:</div>
+          <div>Select the<br/> number<br/> of planets:</div>
           <input type="number" min="0" step="1" value={n}
             onChange={e => setN(Number(e.target.value))}
           /><br/>
