@@ -1,0 +1,16 @@
+.container {display: flex; justify-content: flex-start; align-items: flex-start; }
+.left {display: flex; flex-direction: column; }
+.right {position: relative; }
+input {width: 3em; }
+.line {
+    box-sizing: border-box;
+    border-top: solid 1px black;
+    position: absolute;
+    height: 0px;
+}
+.dot {
+    box-sizing: border-box;
+    border: solid 1px black;
+    position: absolute;
+    border-radius: 50%;
+}
