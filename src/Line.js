@@ -1,6 +1,6 @@
 import React from "react";
 
-const Line = ({ xi, yi, zi, xf, yf, zf, index, done, d, which, nx, nyz }) => {
+const Line = ({ xi, yi, zi, xf, yf, zf, index, done, d, which, nx, nyz, dashed }) => {
     let di = nyz * d * (which ? 1 : -1) / zi;
     let df = nyz * d * (which ? 1 : -1) / zf;
 
@@ -29,6 +29,8 @@ const Line = ({ xi, yi, zi, xf, yf, zf, index, done, d, which, nx, nyz }) => {
             left: `${Xi - R2 / 2 + (di / 2) * Math.sin(angle)}px`,
             top: `${Yi - (di / 2) * Math.cos(angle)}px`,
             transform: `rotate(${angle * 180 / Math.PI}deg) translateX(${R2 / 2}px)`,
+            borderTopStyle: `${dashed ? "dashed" : "solid"}`,
+            zIndex: `${dashed ? 0 : -Math.min(zi, zf)}`
         }}/>
     )
 }

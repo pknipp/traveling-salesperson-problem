@@ -16,7 +16,7 @@ const App = () => {
   const [done, setDone] = useState(false);
   const [start, setStart] = useState(false);
   const [memo, setMemo] = useState([]);
-  const d = 20;
+  const d = 50;
   const nx = 1500;
   const nyz = 600;
   const zmin = 10;
@@ -70,6 +70,7 @@ const App = () => {
       distanceTot += interTownDistances[indexLast][n];
       newItin.unshift(n);
       newItin.push(n);
+      console.log(newItin.join(''), distanceTot)
       // console.log(newItin);
       if(distanceTot < newDistanceMin[0]) {
         setItin([newItin, ...itin]);
@@ -146,19 +147,34 @@ const App = () => {
             })
           })} */}
           {xyzs.map((xyz, index) => (
+            <>
             <Dot key={index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} d={d} nx={nx} nyz={nyz} />
+            <Dot key={"dashed" + index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} d={d} nx={nx} nyz={nyz} dashed={true} />
+            </>
           ))}
           {!start ? null : itin[0].map((townIndex, itinIndex) => {
             return (itinIndex === itin[0].length - 1) ? null :
                 <>
+                <Line key2={itinIndex} key={'bot' + townIndex + ' ' + itin[0][itinIndex + 1]}
+                  done={done} d={d} nx={nx} nyz={nyz} zmin ={zmin}
+                  xi={xyzs[townIndex][0]} xf={xyzs[itin[0][itinIndex + 1]][0]}
+                  yi={xyzs[townIndex][1]} yf={xyzs[itin[0][itinIndex + 1]][1]}
+                  zi={xyzs[townIndex][2]} zf={xyzs[itin[0][itinIndex + 1]][2]}
+                />
                 <Line key2={itinIndex} key={'top' + townIndex + ' ' + itin[0][itinIndex + 1]}
                   done={done} d={d} which={true} nx={nx} nyz={nyz}
                   xi={xyzs[townIndex][0]} xf={xyzs[itin[0][itinIndex + 1]][0]}
                   yi={xyzs[townIndex][1]} yf={xyzs[itin[0][itinIndex + 1]][1]}
                   zi={xyzs[townIndex][2]} zf={xyzs[itin[0][itinIndex + 1]][2]}
                 />
-                <Line key2={itinIndex} key={'bot' + townIndex + ' ' + itin[0][itinIndex + 1]}
-                  done={done} d={d} which={false} nx={nx} nyz={nyz} zmin ={zmin}
+                <Line key2={itinIndex} key={'dashedbot' + townIndex + ' ' + itin[0][itinIndex + 1]}
+                  done={done} d={d} nx={nx} nyz={nyz} zmin ={zmin} dashed={true}
+                  xi={xyzs[townIndex][0]} xf={xyzs[itin[0][itinIndex + 1]][0]}
+                  yi={xyzs[townIndex][1]} yf={xyzs[itin[0][itinIndex + 1]][1]}
+                  zi={xyzs[townIndex][2]} zf={xyzs[itin[0][itinIndex + 1]][2]}
+                />
+                <Line key2={itinIndex} key={'dashedtop' + townIndex + ' ' + itin[0][itinIndex + 1]}
+                  done={done} d={d} which={true} nx={nx} nyz={nyz} dashed={true}
                   xi={xyzs[townIndex][0]} xf={xyzs[itin[0][itinIndex + 1]][0]}
                   yi={xyzs[townIndex][1]} yf={xyzs[itin[0][itinIndex + 1]][1]}
                   zi={xyzs[townIndex][2]} zf={xyzs[itin[0][itinIndex + 1]][2]}
