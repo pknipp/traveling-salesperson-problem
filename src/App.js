@@ -121,7 +121,10 @@ const App = () => {
         {!n ? null : <div><span>
           <select onChange={e => {
             setChoose(Number(e.target.value));
-
+            if (e.target.value === "1") {
+              let newXyzs = JSON.parse(JSON.stringify(xyzs));
+              setXyzs([...newXyzs, ...setTowns(n, nx, nyz, zmin, dim)]);
+            }
           }} value={choose}>
             {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
           </select>&nbsp;

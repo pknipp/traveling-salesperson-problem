@@ -1,4 +1,4 @@
-const setTowns = (n, nx, nyz, zmin, dim, xyzs) => {
+const setTowns = (n, nx, nyz, zmin, dim) => {
     //screen dimension in px
     // randomly create the coordinates of the towns to be visited by salesman
     const xs = [];
