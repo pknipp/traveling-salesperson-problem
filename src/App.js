@@ -12,7 +12,7 @@ const App = () => {
   const [dim, setDim] = useState(0);
   const [n, setN] = useState(0);
   const [choose, setChoose] = useState(0);
-  const [xyzs, setXyzs] = useState([nx/2, nyz/2, 2*nyz/3]);
+  const [xyzs, setXyzs] = useState([[nx / 2, nyz / 2, 2 * nyz / 3]]);
   const [interTownDistances, setInterTownDistances] = useState([[0]]);
   const [facPerm, setFacPerm] = useState(1);
   const [distanceMin, setDistanceMin] = useState([Infinity]);
