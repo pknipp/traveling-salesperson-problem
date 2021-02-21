@@ -37,12 +37,13 @@ const App = () => {
     setStart(false);
     setMemo([]);
   }
-  useEffect(ue0, [n]);
+  useEffect(ue0, [n, dim]);
   const ue1 = () => {
     if (!n || !start) return;
     let newDistanceMin = [...distanceMin];
     let newMemo = [...memo];
     for(let iterPerm = iterPermI; iterPerm < facPerm; iterPerm ++){
+      if (!start) return;
       // salesman starts at origin, which (xyzs[n][0], xyzs[n][1]) is defined to be.
       let indexLast = n;
       let distanceTot = 0;
@@ -76,10 +77,14 @@ const App = () => {
         setItin([newItin, ...itin]);
         setDistanceMin([distanceTot, ...newDistanceMin]);
         setNextIterPermI(iterPerm + 1);
+        // setIterPermI(iterPerm + 1);
         setMemo(newMemo);
         break;
       }
-      if (iterPerm === facPerm - 1) setDone(true);
+      if (iterPerm === facPerm - 1) {
+        setDone(true);
+        setNextIterPermI(iterPerm);
+      }
     }
   }
   useEffect(ue1, [iterPermI, interTownDistances, distanceMin, facPerm, itin, start]);
@@ -88,10 +93,10 @@ const App = () => {
     setIterPermI(nextIterPermI);
   }
   useEffect(ue2, [distanceMin, n, nextIterPermI, start])
-  const ue3 = () => {
-    console.log("done!");
-  }
-  useEffect(ue3, [done]);
+  // const ue3 = () => {
+  //   console.log("done!");
+  // }
+  // useEffect(ue3, [done]);
   return (
     <>
       <div className="top">
@@ -102,6 +107,7 @@ const App = () => {
       </div>
       <div className="container">
         <div className="left">
+          {done ? <><div style={{color: "blue"}}>FINISHED!</div><br/></> : null}
           <div>Select the<br/>dimensionality<br/>of the<br/>salesman's<br/>route:</div>
           <select onChange={e => setDim(Number(e.target.value))} value={dim}>
             {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option}</option>)}
@@ -116,20 +122,19 @@ const App = () => {
           }
           {!n ? null :
             <>
-            {done ? <>Finished!<br/><br/></> : null}
             <>
               <button onClick={() => {
                 let newStart = !start;
                 setStart(newStart);
               }}>
                 {start ? "Cancel" : "Start"}
-              </button>
+              </button><br/>
               {!start ? null :
                 <>
                   <div>Number<br/>of routes<br/> checked:</div>
-                  <div>{(iterPermI + 1).toLocaleString()}</div><br/>
+                  <div>{(nextIterPermI + 1).toLocaleString()}</div><br/>
                   <div>Percentage<br/> completed:</div>
-                  <div>{Math.round(100 * iterPermI/facPerm)}</div><br/>
+                  <div>{Math.round(100 * nextIterPermI/facPerm)}</div><br/>
                   Successive<br/>
                   minimum<br/>
                   distances<br/>
@@ -156,8 +161,8 @@ const App = () => {
           })} */}
           {xyzs.map((xyz, index) => (
             <>
-            <Dot key={index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} d={d} nx={nx} nyz={nyz} />
-            <Dot key={"dashed" + index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} d={d} nx={nx} nyz={nyz} dashed={true} />
+            <Dot key={index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} nx={nx} nyz={nyz} />
+            <Dot key={"dashed" + index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} nx={nx} nyz={nyz} dashed={true} />
             </>
           ))}
           {!start ? null : itin[0].map((townIndex, itinIndex) => {
