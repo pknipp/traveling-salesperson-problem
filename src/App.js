@@ -5,6 +5,7 @@ import setTowns from './setTowns';
 import lookup from './lookup';
 
 const App = () => {
+  const [dim, setDim] = useState(0);
   const [n, setN] = useState(0);
   const [xyzs, setXyzs] = useState([]);
   const [interTownDistances, setInterTownDistances] = useState([[0]]);
@@ -16,7 +17,7 @@ const App = () => {
   const [done, setDone] = useState(false);
   const [start, setStart] = useState(false);
   const [memo, setMemo] = useState([]);
-  const d = 50;
+  const d = 30;
   const nx = 1500;
   const nyz = 600;
   const zmin = 10;
@@ -25,7 +26,7 @@ const App = () => {
     let newFacPerm = 1;
     for(let i = 1; i <= n; i ++) newFacPerm *= i;
     setFacPerm(newFacPerm);
-    const newXyzs = setTowns(n, nx, nyz, zmin);
+    const newXyzs = setTowns(n, nx, nyz, zmin, dim);
     setInterTownDistances(lookup(newXyzs));
     setXyzs(newXyzs);
     setIterPermI(0);
@@ -101,10 +102,18 @@ const App = () => {
       </div>
       <div className="container">
         <div className="left">
-          <div>Select the<br/> number<br/> of planets:</div>
-          <input type="number" min="0" step="1" value={n}
-            onChange={e => setN(Number(e.target.value))}
-          /><br/>
+          <div>Select the<br/>dimensionality<br/>of the<br/>salesman's<br/>route:</div>
+          <select onChange={e => setDim(Number(e.target.value))} value={dim}>
+            {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option}</option>)}
+          </select><br/>
+          {!dim ? null :
+            <>
+            <div>Specify<br/>the number<br/>of planets:</div>
+            <input type="number" min="0" step="1" value={n}
+              onChange={e => setN(Number(e.target.value))}
+            /><br/>
+            </>
+          }
           {!n ? null :
             <>
             {done ? <>Finished!<br/><br/></> : null}

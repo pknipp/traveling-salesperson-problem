@@ -1,4 +1,4 @@
-const setTowns = (n, nx, nyz, zmin) => {
+const setTowns = (n, nx, nyz, zmin, dim) => {
     //screen dimension in px
     // randomly create the coordinates of the towns to be visited by salesman
     const xs = [];
@@ -7,7 +7,7 @@ const setTowns = (n, nx, nyz, zmin) => {
     while (xs.length < n) {
         const x = Math.floor(nx * Math.random());
         const y = Math.floor(nyz * Math.random());
-        const z = zmin + Math.floor(nyz * Math.random());
+        const z = zmin + Math.floor(nyz * (dim === 1 ? 2/3 : Math.random()));
         const ix = xs.indexOf(x);
         const iy = ys.indexOf(y);
         const iz = zs.indexOf(z);

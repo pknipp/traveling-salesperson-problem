@@ -1,4 +1,3 @@
-    * allow user to toggle between 2d and 3d
     * allow user to choose points by clicking or using Math.random.
     * fix react
     * use transitions as route is updated
