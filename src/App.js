@@ -11,6 +11,7 @@ const App = () => {
   const zmin = 10;
   const [dim, setDim] = useState(0);
   const [n, setN] = useState(0);
+  const [choose, setChoose] = useState(0);
   const [xyzs, setXyzs] = useState([nx/2, nyz/2, 2*nyz/3]);
   const [interTownDistances, setInterTownDistances] = useState([[0]]);
   const [facPerm, setFacPerm] = useState(1);
@@ -115,6 +116,12 @@ const App = () => {
             onChange={e => setN(Number(e.target.value))}
           />
           Specify the number of points along the saleeman's route.
+        </span></div>}
+        {!n ? null : <div><span>
+          <select onChange={e => setChoose(Number(e.target.value))} value={choose}>
+            {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
+          </select>&nbsp;
+          Specify whether these points should be chosen randomly or by clicking.
         </span></div>}
       </div>
       <div className="container">
