@@ -28,9 +28,9 @@ const App = () => {
     let newFacPerm = 1;
     for(let i = 1; i <= n; i ++) newFacPerm *= i;
     setFacPerm(newFacPerm);
-    const newXyzs = setTowns(n, nx, nyz, zmin, dim);
-    setInterTownDistances(lookup(newXyzs));
-    setXyzs(newXyzs);
+    // const newXyzs = setTowns(n, nx, nyz, zmin, dim);
+    // setInterTownDistances(lookup(newXyzs));
+    // setXyzs(newXyzs);
     setIterPermI(0);
     setNextIterPermI(1);
     setItin([[]]);
@@ -95,6 +95,7 @@ const App = () => {
     setIterPermI(nextIterPermI);
   }
   useEffect(ue2, [distanceMin, n, nextIterPermI, start])
+
   const handleClick = e => {
     console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
   }
@@ -115,10 +116,13 @@ const App = () => {
           <input type="number" min="0" step="1" value={n}
             onChange={e => setN(Number(e.target.value))}
           />
-          Specify the number of points along the saleeman's route.
+          Specify the number of points along the salesman's route.
         </span></div>}
         {!n ? null : <div><span>
-          <select onChange={e => setChoose(Number(e.target.value))} value={choose}>
+          <select onChange={e => {
+            setChoose(Number(e.target.value));
+
+          }} value={choose}>
             {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
           </select>&nbsp;
           Specify whether these points should be chosen randomly or by clicking.
@@ -128,7 +132,7 @@ const App = () => {
         <div className="left">
           {done ? <><div style={{color: "blue"}}>FINISHED!</div><br/></> : null}
 
-          {!n ? null :
+          {!n || xyzs.length !== n + 1 ? null :
             <>
             <>
               <button onClick={() => {

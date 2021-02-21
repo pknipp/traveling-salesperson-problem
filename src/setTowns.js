@@ -1,4 +1,4 @@
-const setTowns = (n, nx, nyz, zmin, dim) => {
+const setTowns = (n, nx, nyz, zmin, dim, xyzs) => {
     //screen dimension in px
     // randomly create the coordinates of the towns to be visited by salesman
     const xs = [];
@@ -21,9 +21,9 @@ const setTowns = (n, nx, nyz, zmin, dim) => {
             }
         }
     }
-    xs.push(Math.floor(nx/2));
-    ys.push(Math.floor(nyz/2));
-    zs.push(zmin + Math.floor(2 * nyz/3));
-    return xs.map((x, i) => [x, ys[i], zs[i] ] );
+    // xs.push(Math.floor(nx/2));
+    // ys.push(Math.floor(nyz/2));
+    // zs.push(zmin + Math.floor(2 * nyz/3));
+    return xs.map((x, i) => [x, ys[i], zs[i]]);
 }
 export default setTowns;
