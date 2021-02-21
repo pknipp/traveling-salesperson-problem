@@ -1,6 +1,6 @@
 .container {display: flex; justify-content: flex-start; align-items: flex-start; }
 .left {display: flex; flex-direction: column; }
-.right {position: relative; }
+.right {position: relative; box-sizing: border-box; border: 1px solid black;}
 input {width: 3em; }
 .line {
     box-sizing: border-box;
