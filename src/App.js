@@ -93,10 +93,9 @@ const App = () => {
     setIterPermI(nextIterPermI);
   }
   useEffect(ue2, [distanceMin, n, nextIterPermI, start])
-  // const ue3 = () => {
-  //   console.log("done!");
-  // }
-  // useEffect(ue3, [done]);
+  const handleClick = e => {
+    console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+  }
   return (
     <>
       <div className="top">
@@ -108,6 +107,7 @@ const App = () => {
       <div className="container">
         <div className="left">
           {done ? <><div style={{color: "blue"}}>FINISHED!</div><br/></> : null}
+
           <div>Select the<br/>dimensionality<br/>of the<br/>salesman's<br/>route:</div>
           <select onChange={e => setDim(Number(e.target.value))} value={dim}>
             {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option}</option>)}
@@ -149,7 +149,10 @@ const App = () => {
           }
         </div>
 
-        <div className="right">
+        <div className="right"
+          style={{height:`${nyz}px`, width: `${nx}px`}}
+          onClick={handleClick}
+        >
           {/* {itin.map((itin, index) => {
             return itin.map((townIndex, itinIndex) => {
               return (itinIndex === itin.length - 1) ? null :
