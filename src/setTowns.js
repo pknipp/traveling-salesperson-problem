@@ -23,7 +23,7 @@ const setTowns = (n, nx, nyz, zmin, dim) => {
     }
     // xs.push(Math.floor(nx/2));
     // ys.push(Math.floor(nyz/2));
-    // zs.push(zmin + Math.floor(2 * nyz/3));
+    // zs.push(zmin + Math.floor(3 * nyz/4));
     return xs.map((x, i) => [x, ys[i], zs[i]]);
 }
 export default setTowns;

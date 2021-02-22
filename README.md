@@ -11,6 +11,11 @@ X and Y are apparent lateral positions of planets, expanded more if closer to vi
 borders of paths between planets = segment that is tangent to both planets
 2 x 2 = 4 components: atop vs below, and solid (zIndex = -z) vs dashed (zIndex = 0)
 
+middle column is factorial base:
+
+factorial base,
+lexographic ordering needed in order to have a highly reusable (ie, small) memo.  Space complexity = ?
+
 permutations:
 iterPerm -> itin:
 e.g.: n = 4 and iterPerm = 07 -> 1010 -> 1(023), 10(23), 103(2), 1032
