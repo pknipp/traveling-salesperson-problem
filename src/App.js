@@ -137,8 +137,10 @@ const App = () => {
         </span></div>}
         {!n ? null : <div><span>
           <select onChange={e => {
-            setChoose(Number(e.target.value));
-            if (e.target.value === "1") {
+            // following line is temporarily hard-wired to allow only randomization in 3-d
+            let newChoose = (dim === 2 ? 1 : Number(e.target.value));
+            setChoose(newChoose);
+            if (newChoose === 1) {
               let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...JSON.parse(JSON.stringify(xyzs))];
               setXyzs(newXyzs);
               setInterTownDistances(lookup(newXyzs));
@@ -146,7 +148,7 @@ const App = () => {
           }} value={choose}>
             {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
           </select>&nbsp;
-          Specify whether these points should be chosen randomly or by clicking.
+          Specify whether these points should be chosen randomly or by clicking. {(dim === 2) ? "NOTE: This is presently hardwired to allow only random values." : null}
         </span></div>}
       </div>
       <div className="container">
