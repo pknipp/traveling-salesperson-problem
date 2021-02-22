@@ -81,7 +81,11 @@ const App = () => {
       distanceTot += interTownDistances[indexLast][n];
       newItin.unshift(n);
       newItin.push(n);
-      if(distanceTot < newDistanceMin[0]) {
+      if (!(100 * iterPerm % facPerm)) {
+        setNextIterPermI(iterPerm + 1);
+        break;
+      }
+      if (distanceTot < newDistanceMin[0]) {
         setItin([newItin, ...itin]);
         setDistanceMin([distanceTot, ...newDistanceMin]);
         setNextIterPermI(iterPerm + 1);
