@@ -1,6 +1,6 @@
 import React from "react";
 
-const Line = ({ xi, yi, zi, xf, yf, zf, index, done, d, which, nx, nyz, dashed }) => {
+const Line = ({ xi, yi, zi, xf, yf, zf, index, d, which, nx, nyz, dashed }) => {
     let di = nyz * d * (which ? 1 : -1) / zi;
     let df = nyz * d * (which ? 1 : -1) / zf;
 
