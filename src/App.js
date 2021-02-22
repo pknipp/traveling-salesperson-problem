@@ -110,9 +110,9 @@ const App = () => {
   return (
     <>
       <div className="top">
-        <p align="center"><h1>3-dimensional "Traveling Salesman Problem"</h1></p>
+        <p align="center"><h1>Traveling Salesman Problem</h1></p>
         <p>
-          In this 3-d version of the classical NP-hard computing problem, a galactic salesman plans a route which enables him/her to leave home and visit all <i>N</i> planets in that portion of the galaxy, while traveling the shortest possible distance.  The time complexity for my brute-force algorithm is "factorial" [<i>O</i>(<i>N</i>!)], which means that the planning time required for 10 planets will be 10 times longer than that for 9 planets, and the time required for 11 planets will be 11 times longer than that for 10, etc.  The algorithm is seemingly instantaneous for <i>N</i> &lt; 9 and usually stalls for <i>N</i> &gt; 11.
+          In this classical NP-hard computing problem, a salesman plans a route which enables him/her to leave home and visit all <i>N</i> points in that region while traveling the shortest possible distance.  You may implement this either in two dimensions (the traditional problem) or three (as for a galactic salesman visiting different planets).  The time complexity for my brute-force algorithm is "factorial" [<i>O</i>(<i>N</i>!)], which means that the planning time required for <i>N</i> = 10 will be 10 times longer than that for <i>N</i> = 9 planets, and the time required for <i>N</i> = 11 will be 11 times longer than that for 10, etc.  The algorithm is seemingly instantaneous for <i>N</i> &lt; 9 and usually stalls for <i>N</i> &gt; 11.
         </p>
         <div><span>
           <select onChange={e => setDim(Number(e.target.value))} value={dim}>
@@ -158,12 +158,7 @@ const App = () => {
           {!n || xyzs.length !== n + 1 ? null :
             <>
             <>
-              <button onClick={() => {
-                let newStart = !start;
-                setStart(newStart);
-              }}>
-                {start ? "Cancel" : "Start"}
-              </button><br/>
+              {start ? null : <button onClick={() => setStart(true)}>Start</button>}
               {!start ? null :
                 <>
                   <div>Number<br/>of routes<br/> checked:</div>
