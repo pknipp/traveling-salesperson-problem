@@ -7,7 +7,7 @@ const setTowns = (n, nx, nyz, zmin, dim) => {
     while (xs.length < n) {
         const x = Math.floor(nx * Math.random());
         const y = Math.floor(nyz * Math.random());
-        const z = zmin + Math.floor(nyz * (dim === 1 ? 2/3 : Math.random()));
+        const z = zmin + Math.floor(nyz * (dim === 1 ? 1 : Math.random()));
         const ix = xs.indexOf(x);
         const iy = ys.indexOf(y);
         const iz = zs.indexOf(z);

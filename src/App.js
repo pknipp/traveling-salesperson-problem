@@ -40,6 +40,7 @@ const App = () => {
     setMemo([]);
   }
   useEffect(ue0, [n, dim]);
+
   const ue1 = () => {
     if (!n || !start) return;
     let newDistanceMin = [...distanceMin];
@@ -100,9 +101,10 @@ const App = () => {
     if (choose === 2) {
       let newXyzs = JSON.parse(JSON.stringify(xyzs));
       if (newXyzs.length < n + 1) {
-        newXyzs.push([e.nativeEvent.offsetX, e.nativeEvent.offsetY, nyz]);
+        newXyzs.unshift([e.nativeEvent.offsetX, e.nativeEvent.offsetY, nyz]);
         setXyzs(newXyzs);
       }
+      if (newXyzs.length === n + 1) setInterTownDistances(lookup(newXyzs));
     }
   }
   return (
@@ -120,7 +122,16 @@ const App = () => {
         </span></div>
         {!dim ? null : <div><span>
           <input type="number" min="0" step="1" value={n}
-            onChange={e => setN(Number(e.target.value))}
+            onChange={e => {
+              setN(Number(e.target.value));
+              // following 6 lines are hard-wired until I can click into a z-specification
+              // if (dim === 2) {
+              //   setChoose(1);
+              //   let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...JSON.parse(JSON.stringify(xyzs))];
+              //   setXyzs(newXyzs);
+              //   setInterTownDistances(lookup(newXyzs));
+              // }
+            }}
           />
           Specify the number of points along the salesman's route.
         </span></div>}
@@ -128,8 +139,9 @@ const App = () => {
           <select onChange={e => {
             setChoose(Number(e.target.value));
             if (e.target.value === "1") {
-              let newXyzs = JSON.parse(JSON.stringify(xyzs));
-              setXyzs([...newXyzs, ...setTowns(n, nx, nyz, zmin, dim)]);
+              let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...JSON.parse(JSON.stringify(xyzs))];
+              setXyzs(newXyzs);
+              setInterTownDistances(lookup(newXyzs));
             }
           }} value={choose}>
             {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
