@@ -5,9 +5,14 @@ import setTowns from './setTowns';
 import lookup from './lookup';
 
 const App = () => {
+  const d = 30;
+  const nx = 1500;
+  const nyz = 600;
+  const zmin = 10;
   const [dim, setDim] = useState(0);
   const [n, setN] = useState(0);
-  const [xyzs, setXyzs] = useState([]);
+  const [choose, setChoose] = useState(0);
+  const [xyzs, setXyzs] = useState([[nx / 2, nyz / 2, nyz]]);
   const [interTownDistances, setInterTownDistances] = useState([[0]]);
   const [facPerm, setFacPerm] = useState(1);
   const [distanceMin, setDistanceMin] = useState([Infinity]);
@@ -17,18 +22,15 @@ const App = () => {
   const [done, setDone] = useState(false);
   const [start, setStart] = useState(false);
   const [memo, setMemo] = useState([]);
-  const d = 30;
-  const nx = 1500;
-  const nyz = 600;
-  const zmin = 10;
+
   const ue0 = () => {
     if (!n) return;
     let newFacPerm = 1;
     for(let i = 1; i <= n; i ++) newFacPerm *= i;
     setFacPerm(newFacPerm);
-    const newXyzs = setTowns(n, nx, nyz, zmin, dim);
-    setInterTownDistances(lookup(newXyzs));
-    setXyzs(newXyzs);
+    // const newXyzs = setTowns(n, nx, nyz, zmin, dim);
+    // setInterTownDistances(lookup(newXyzs));
+    // setXyzs(newXyzs);
     setIterPermI(0);
     setNextIterPermI(1);
     setItin([[]]);
@@ -38,6 +40,7 @@ const App = () => {
     setMemo([]);
   }
   useEffect(ue0, [n, dim]);
+
   const ue1 = () => {
     if (!n || !start) return;
     let newDistanceMin = [...distanceMin];
@@ -93,10 +96,17 @@ const App = () => {
     setIterPermI(nextIterPermI);
   }
   useEffect(ue2, [distanceMin, n, nextIterPermI, start])
-  // const ue3 = () => {
-  //   console.log("done!");
-  // }
-  // useEffect(ue3, [done]);
+
+  const handleClick = e => {
+    if (choose === 2) {
+      let newXyzs = JSON.parse(JSON.stringify(xyzs));
+      if (newXyzs.length < n + 1) {
+        newXyzs.unshift([e.nativeEvent.offsetX, e.nativeEvent.offsetY, nyz]);
+        setXyzs(newXyzs);
+      }
+      if (newXyzs.length === n + 1) setInterTownDistances(lookup(newXyzs));
+    }
+  }
   return (
     <>
       <div className="top">
@@ -104,23 +114,48 @@ const App = () => {
         <p>
           In this 3-d version of the classical NP-hard computing problem, a galactic salesman plans a route which enables him/her to leave home and visit all <i>N</i> planets in that portion of the galaxy, while traveling the shortest possible distance.  The time complexity for my brute-force algorithm is "factorial" [<i>O</i>(<i>N</i>!)], which means that the planning time required for 10 planets will be 10 times longer than that for 9 planets, and the time required for 11 planets will be 11 times longer than that for 10, etc.  The algorithm is seemingly instantaneous for <i>N</i> &lt; 9 and usually stalls for <i>N</i> &gt; 11.
         </p>
+        <div><span>
+          <select onChange={e => setDim(Number(e.target.value))} value={dim}>
+            {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option} </option>)}
+          </select>&nbsp;
+          Select the dimensionality of the salesman's route.
+        </span></div>
+        {!dim ? null : <div><span>
+          <input type="number" min="0" step="1" value={n}
+            onChange={e => {
+              setN(Number(e.target.value));
+              // following 6 lines are hard-wired until I can click into a z-specification
+              // if (dim === 2) {
+              //   setChoose(1);
+              //   let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...JSON.parse(JSON.stringify(xyzs))];
+              //   setXyzs(newXyzs);
+              //   setInterTownDistances(lookup(newXyzs));
+              // }
+            }}
+          />
+          Specify the number of points along the salesman's route.
+        </span></div>}
+        {!n ? null : <div><span>
+          <select onChange={e => {
+            // following line is temporarily hard-wired to allow only randomization in 3-d
+            let newChoose = (dim === 2 ? 1 : Number(e.target.value));
+            setChoose(newChoose);
+            if (newChoose === 1) {
+              let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...JSON.parse(JSON.stringify(xyzs))];
+              setXyzs(newXyzs);
+              setInterTownDistances(lookup(newXyzs));
+            }
+          }} value={choose}>
+            {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
+          </select>&nbsp;
+          Specify whether these points should be chosen randomly or by clicking. {(dim === 2) ? "NOTE: This is presently hardwired to allow only random values." : null}
+        </span></div>}
       </div>
       <div className="container">
         <div className="left">
           {done ? <><div style={{color: "blue"}}>FINISHED!</div><br/></> : null}
-          <div>Select the<br/>dimensionality<br/>of the<br/>salesman's<br/>route:</div>
-          <select onChange={e => setDim(Number(e.target.value))} value={dim}>
-            {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option}</option>)}
-          </select><br/>
-          {!dim ? null :
-            <>
-            <div>Specify<br/>the number<br/>of planets:</div>
-            <input type="number" min="0" step="1" value={n}
-              onChange={e => setN(Number(e.target.value))}
-            /><br/>
-            </>
-          }
-          {!n ? null :
+
+          {!n || xyzs.length !== n + 1 ? null :
             <>
             <>
               <button onClick={() => {
@@ -149,7 +184,10 @@ const App = () => {
           }
         </div>
 
-        <div className="right">
+        <div className="right"
+          style={{height:`${nyz}px`, width: `${nx}px`}}
+          onClick={handleClick}
+        >
           {/* {itin.map((itin, index) => {
             return itin.map((townIndex, itinIndex) => {
               return (itinIndex === itin.length - 1) ? null :

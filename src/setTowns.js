@@ -7,7 +7,7 @@ const setTowns = (n, nx, nyz, zmin, dim) => {
     while (xs.length < n) {
         const x = Math.floor(nx * Math.random());
         const y = Math.floor(nyz * Math.random());
-        const z = zmin + Math.floor(nyz * (dim === 1 ? 2/3 : Math.random()));
+        const z = zmin + Math.floor(nyz * (dim === 1 ? 1 : Math.random()));
         const ix = xs.indexOf(x);
         const iy = ys.indexOf(y);
         const iz = zs.indexOf(z);
@@ -21,9 +21,9 @@ const setTowns = (n, nx, nyz, zmin, dim) => {
             }
         }
     }
-    xs.push(Math.floor(nx/2));
-    ys.push(Math.floor(nyz/2));
-    zs.push(zmin + Math.floor(2 * nyz/3));
-    return xs.map((x, i) => [x, ys[i], zs[i] ] );
+    // xs.push(Math.floor(nx/2));
+    // ys.push(Math.floor(nyz/2));
+    // zs.push(zmin + Math.floor(2 * nyz/3));
+    return xs.map((x, i) => [x, ys[i], zs[i]]);
 }
 export default setTowns;
