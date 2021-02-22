@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Line from './Line';
 import Dot from './Dot';
 import ToggleInfo from './ToggleInfo';
+import info from "./info.png";
+import cancel from "./cancel.jpeg";
 import setTowns from './setTowns';
 import lookup from './lookup';
 
@@ -81,7 +83,7 @@ const App = () => {
       distanceTot += interTownDistances[indexLast][n];
       newItin.unshift(n);
       newItin.push(n);
-      if (!(100 * iterPerm % facPerm)) {
+      if (!(1000 * iterPerm % facPerm)) {
         setNextIterPermI(iterPerm + 1);
         break;
       }
@@ -128,7 +130,7 @@ const App = () => {
 
 let text = {
   dim:`You have two choices for the region's dimensionality. A 2-dimensional region will correspond to the box below: ${nx}px x ${nyz}px.  The presence of a third dimension (if chosen) will be simulated by the obvious fact that closer planets appear larger. The 3-dimensional region will be the frustum of a pyramid whose base has the dimensions of the window below and whose height (perpendicular to the screen) equals ${nyz}px minus ${zmin}px, the latter length corresponding to the closest allowable distance to the viewer. My choice of a pyramidal shape ensures that no planets will be outside of your peripheral vision, even if close to you.  My use of a frustum ensures that the apparent size of no planet will be inconveniently large. One thing to notice: in 2-d the shortest path can have no apparent "crossovers", whereas this may not be the case in 3-d.`,
-  n:"The time complexity for my brute-force algorithm is 'factorial' [O(N!)], which means that the calculation-time required for N = 10 will be 10 times longer than that for N = 9 planets, and the time required for N = 11 will be 11 times longer than that for 10, etc.  On my computer the present algorithm is seemingly instantaneous for N < 9 and usually stalls for N > 11. Note that N does NOT include the salesman's home, where the journey starts and ends.",
+  n:"The time complexity for my brute-force algorithm is 'factorial' [O(N!)], which means that the calculation-time required for N = 10 will be 10 times longer than that for N = 9 planets, and the time required for N = 11 will be 11 times longer than that for 10, etc.  On my computer the present algorithm is seemingly instantaneous for N < 9 but is much slower for larger N. Note that N does NOT include the salesman's home, where the journey starts and ends.",
   choose:`${dim === 1 ? "This'll consist simply of a sequence of point-and-clicks at different locations on the screen.  Regardless of the pattern of your towns, you should probably create them in a random order, because the first path chosen by my algorithm is the one that follows the sequence with which you created the towns." : "If you choose 'random', each planet will be placed randomly within this pyramical region.  If you choose 'click', each planet's lateral position corresponds simply to your click's position, whereas the planet's z-coordinate is controlled by your click's duration as follows: a brief click will create a planet far from the viewer whereas a long click will create one closeby."}`,
 }
 
@@ -152,7 +154,8 @@ let text = {
       <div className="top">
         <p align="center"><h1>Traveling Salesman Problem</h1></p>
         <p>
-          In this classical NP-hard computing problem, a salesman plans a route which enables him/her to leave home and visit all <i>N</i> points in that region while traveling the shortest possible distance.  You may implement this either in two dimensions (the traditional problem) or three (as for a galactic salesman visiting different planets).
+          In this classical NP-hard computing problem, a salesman plans a route which enables him/her to leave home and visit all <i>N</i> points in that region while traveling the shortest possible distance.  You may implement this planning algorithm either in two dimensions (the traditional problem) or in three (as for a galactic salesman who visits different planets).
+          NOTE: Each control below has a place where you can click '<img src={info} alt="Show information." />/<img src={cancel} alt="Hide information." />' in order to toggle the display of information about the particular control.
         </p>
         <div><span>
           <select onChange={e => setDim(Number(e.target.value))} value={dim}>
@@ -202,7 +205,7 @@ let text = {
                   <div>Number<br/>of routes<br/> checked:</div>
                   <div>{(nextIterPermI + 1).toLocaleString()}</div><br/>
                   <div>Percentage<br/> completed:</div>
-                  <div>{Math.round(100 * nextIterPermI/facPerm)}</div><br/>
+                  <div>{Math.round(1000 * nextIterPermI/facPerm)/10}</div><br/>
                   Successive<br/>
                   minimum<br/>
                   distances<br/>
