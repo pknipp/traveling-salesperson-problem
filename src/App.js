@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Line from './Line';
 import Dot from './Dot';
+import ToggleInfo from './ToggleInfo';
 import setTowns from './setTowns';
 import lookup from './lookup';
 
@@ -12,7 +13,7 @@ const App = () => {
   const [dim, setDim] = useState(0);
   const [n, setN] = useState(0);
   const [choose, setChoose] = useState(0);
-  const [xyzs, setXyzs] = useState([[nx / 2, nyz / 2, nyz]]);
+  const [xyzs, setXyzs] = useState([[nx / 2, nyz / 2, nyz * (dim === 2 && choose === 1 ? 2/3 : 1)]]);
   const [interTownDistances, setInterTownDistances] = useState([[0]]);
   const [facPerm, setFacPerm] = useState(1);
   const [distanceMin, setDistanceMin] = useState([Infinity]);
@@ -26,6 +27,7 @@ const App = () => {
   const [down, setDown] = useState(false);
   const [X, setX] = useState(null);
   const [Y, setY] = useState(null);
+  const [showInfo, setShowInfo] = useState({});
 
   const ue0 = () => {
     if (!n) return;
@@ -101,6 +103,7 @@ const App = () => {
   useEffect(ue2, [distanceMin, n, nextIterPermI, start])
 
   const handleDown = e => {
+    if (xyzs.length === n + 1) return;
     setDown(true);
     setX(e.nativeEvent.offsetX);
     setY(e.nativeEvent.offsetY);
@@ -111,6 +114,19 @@ const App = () => {
     setDown(false);
     setInterTownDistances(lookup(xyzs));
   }
+
+  const handleToggle = e => {
+    let name = e.currentTarget.name;
+    let newShowInfo = {...showInfo};
+    newShowInfo[name] = !showInfo[name];
+    setShowInfo(newShowInfo);
+}
+
+let text = {
+  dim:`You have two choices for the region's dimensionality. A 2-dimensional region will correspond to the box below: ${nx}px x ${nyz}px.  The presence of a third dimension (if chosen) will be simulated by the obvious fact that closer planets appear larger. The 3-dimensional region will be the frustum of a pyramid whose base has the dimensions of the window below and whose height (perpendicular to the screen) equals ${nyz}px minus ${zmin}px, the latter length corresponding to the closest allowable distance to the viewer. My choice of a pyramidal shape ensures that no planets will be outside of your peripheral vision, even if close to you.  My use of a frustum ensures that the apparent size of no planet will be inconveniently large. One thing to notice: in 2-d the shortest path can have no apparent "crossovers", whereas this may not be the case in 3-d.`,
+  n:"The time complexity for my brute-force algorithm is 'factorial' [O(N!)], which means that the calculation-time required for N = 10 will be 10 times longer than that for N = 9 planets, and the time required for N = 11 will be 11 times longer than that for 10, etc.  On my computer the present algorithm is seemingly instantaneous for N < 9 and usually stalls for N > 11. Note that N does NOT include the salesman's home, where the journey starts and ends.",
+  choose:`${dim === 1 ? "This'll consist simply of a sequence of point-and-clicks at different locations on the screen.  Regardless of the pattern of your towns, you should probably create them in a random order, because the first path chosen by my algorithm is the one that follows the sequence with which you created the towns." : "If you choose 'random', each planet will be placed randomly within this pyramical region.  If you choose 'click', the apparent lateral-position of each planet is simply chosen by your click, whereas the planet's z-coordinate will be controlled by the duration of your click as follows: a brief click will create a planet far from the viewer whereas a long click will create one closeby."}`,
+}
 
   useEffect(() => {
     let interval = null;
@@ -132,33 +148,29 @@ const App = () => {
       <div className="top">
         <p align="center"><h1>Traveling Salesman Problem</h1></p>
         <p>
-          In this classical NP-hard computing problem, a salesman plans a route which enables him/her to leave home and visit all <i>N</i> points in that region while traveling the shortest possible distance.  You may implement this either in two dimensions (the traditional problem) or three (as for a galactic salesman visiting different planets).  The time complexity for my brute-force algorithm is "factorial" [<i>O</i>(<i>N</i>!)], which means that the planning time required for <i>N</i> = 10 will be 10 times longer than that for <i>N</i> = 9 planets, and the time required for <i>N</i> = 11 will be 11 times longer than that for 10, etc.  The algorithm is seemingly instantaneous for <i>N</i> &lt; 9 and usually stalls for <i>N</i> &gt; 11.
+          In this classical NP-hard computing problem, a salesman plans a route which enables him/her to leave home and visit all <i>N</i> points in that region while traveling the shortest possible distance.  You may implement this either in two dimensions (the traditional problem) or three (as for a galactic salesman visiting different planets).
         </p>
         <div><span>
           <select onChange={e => setDim(Number(e.target.value))} value={dim}>
             {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option} </option>)}
           </select>&nbsp;
           Select the dimensionality of the salesman's route.
+          &nbsp;<ToggleInfo onClick={handleToggle} name="dim" toggle={showInfo.dim} />
+          &nbsp;<i>{showInfo.dim ? text.dim : null}</i>
         </span></div>
         {!dim ? null : <div><span>
           <input type="number" min="0" step="1" value={n}
             onChange={e => {
               setN(Number(e.target.value));
-              // following 6 lines are hard-wired until I can click into a z-specification
-              // if (dim === 2) {
-              //   setChoose(1);
-              //   let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...JSON.parse(JSON.stringify(xyzs))];
-              //   setXyzs(newXyzs);
-              //   setInterTownDistances(lookup(newXyzs));
-              // }
             }}
-          />
+          />&nbsp;
           Specify the number of points along the salesman's route.
+          &nbsp;<ToggleInfo onClick={handleToggle} name="n" toggle={showInfo.n} />
+          &nbsp;<i>{showInfo.n ? text.n : null}</i>
         </span></div>}
         {!n ? null : <div><span>
           <select onChange={e => {
-            // following line is temporarily hard-wired to allow only randomization in 3-d
-            let newChoose = (dim === 2 ? 1 : Number(e.target.value));
+            let newChoose = Number(e.target.value);
             setChoose(newChoose);
             if (newChoose === 1) {
               let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...JSON.parse(JSON.stringify(xyzs))];
@@ -168,7 +180,9 @@ const App = () => {
           }} value={choose}>
             {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
           </select>&nbsp;
-          Specify whether these points should be chosen randomly or by clicking. {(dim === 2) ? "NOTE: This is presently hardwired to allow only random values." : null}
+          Specify whether these points should be chosen randomly or by clicking.
+          &nbsp;<ToggleInfo onClick={handleToggle} name="choose" toggle={showInfo.choose} />
+          &nbsp;<i>{showInfo.choose ? text.choose : null}</i>
         </span></div>}
       </div>
       <div className="container">
