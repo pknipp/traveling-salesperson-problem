@@ -5,7 +5,7 @@ import setTowns from './setTowns';
 import lookup from './lookup';
 
 const App = () => {
-  const d = 30;
+  const d = 20;
   const nx = 1500;
   const nyz = 600;
   const zmin = 10;
@@ -22,7 +22,6 @@ const App = () => {
   const [done, setDone] = useState(false);
   const [start, setStart] = useState(false);
   const [memo, setMemo] = useState([]);
-  // const [myInterval, setMyInterval] = useState(null);
   const [z, setZ] = useState(nyz);
   const [down, setDown] = useState(false);
   const [X, setX] = useState(null);
@@ -80,7 +79,6 @@ const App = () => {
       distanceTot += interTownDistances[indexLast][n];
       newItin.unshift(n);
       newItin.push(n);
-      // console.log(newItin.join(''), distanceTot)
       if(distanceTot < newDistanceMin[0]) {
         setItin([newItin, ...itin]);
         setDistanceMin([distanceTot, ...newDistanceMin]);
@@ -107,47 +105,27 @@ const App = () => {
     setX(e.nativeEvent.offsetX);
     setY(e.nativeEvent.offsetY);
     setZ(nyz);
-    // if (choose === 2) {
-    //   let newXyzs = JSON.parse(JSON.stringify(xyzs));
-    //   if (newXyzs.length < n + 1) {
-    //     newXyzs.unshift([e.nativeEvent.offsetX, e.nativeEvent.offsetY, nyz]);
-    //     setXyzs(newXyzs);
-    //   }
-    //   if (newXyzs.length === n + 1) setInterTownDistances(lookup(newXyzs));
-    // }
   }
 
   const handleUp = e => {
     setDown(false);
     setInterTownDistances(lookup(xyzs));
-    // let X = e.nativeEvent.offsetX;
-    // let x = nx / 2 + z * (X - nx / 2) / nyz;
-    // let Y = e.nativeEvent.offsetY;
-    // let y = nyz / 2 + z * (Y - nyz / 2) / nyz;
-    // let newXyzs = [[x, y, z], ...JSON.parse(JSON.stringify(xyzs))];
-    // setXyzs(newXyzs);
-    // console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY, z)
   }
 
   useEffect(() => {
     let interval = null;
     if (down) {
-      // console.log(X, Y, z);
       let x = nx / 2 + z * (X - nx / 2) / nyz;
       let y = nyz / 2 + z * (Y - nyz / 2) / nyz;
       setXyzs([[x, y, z], ...xyzs.slice(z === nyz ? 0 : 1)]);
       interval = setInterval(() => {
-        setZ(z => z - 1);
+        setZ(z => Math.max(z - 1, zmin));
       }, 1);
     } else if (!down && z !== 0) {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
   }, [down, z]);
-
-  // const tick = () => {
-  //   setZ(z + 10);
-  // }
 
   return (
     <>
@@ -197,7 +175,7 @@ const App = () => {
         <div className="left">
           {done ? <><div style={{color: "blue"}}>FINISHED!</div><br/></> : null}
 
-          {!n || xyzs.length !== n + 1 ? null :
+          {!(n && xyzs.length === n + 1 && !down) ? null :
             <>
             <>
               {start ? null : <button onClick={() => setStart(true)}>Start</button>}
