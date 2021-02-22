@@ -22,6 +22,11 @@ const App = () => {
   const [done, setDone] = useState(false);
   const [start, setStart] = useState(false);
   const [memo, setMemo] = useState([]);
+  // const [myInterval, setMyInterval] = useState(null);
+  const [z, setZ] = useState(nyz);
+  const [down, setDown] = useState(false);
+  const [X, setX] = useState(null);
+  const [Y, setY] = useState(null);
 
   const ue0 = () => {
     if (!n) return;
@@ -75,7 +80,7 @@ const App = () => {
       distanceTot += interTownDistances[indexLast][n];
       newItin.unshift(n);
       newItin.push(n);
-      console.log(newItin.join(''), distanceTot)
+      // console.log(newItin.join(''), distanceTot)
       if(distanceTot < newDistanceMin[0]) {
         setItin([newItin, ...itin]);
         setDistanceMin([distanceTot, ...newDistanceMin]);
@@ -97,16 +102,53 @@ const App = () => {
   }
   useEffect(ue2, [distanceMin, n, nextIterPermI, start])
 
-  const handleClick = e => {
-    if (choose === 2) {
-      let newXyzs = JSON.parse(JSON.stringify(xyzs));
-      if (newXyzs.length < n + 1) {
-        newXyzs.unshift([e.nativeEvent.offsetX, e.nativeEvent.offsetY, nyz]);
-        setXyzs(newXyzs);
-      }
-      if (newXyzs.length === n + 1) setInterTownDistances(lookup(newXyzs));
-    }
+  const handleDown = e => {
+    setDown(true);
+    setX(e.nativeEvent.offsetX);
+    setY(e.nativeEvent.offsetY);
+    setZ(nyz);
+    // if (choose === 2) {
+    //   let newXyzs = JSON.parse(JSON.stringify(xyzs));
+    //   if (newXyzs.length < n + 1) {
+    //     newXyzs.unshift([e.nativeEvent.offsetX, e.nativeEvent.offsetY, nyz]);
+    //     setXyzs(newXyzs);
+    //   }
+    //   if (newXyzs.length === n + 1) setInterTownDistances(lookup(newXyzs));
+    // }
   }
+
+  const handleUp = e => {
+    setDown(false);
+    setInterTownDistances(lookup(xyzs));
+    // let X = e.nativeEvent.offsetX;
+    // let x = nx / 2 + z * (X - nx / 2) / nyz;
+    // let Y = e.nativeEvent.offsetY;
+    // let y = nyz / 2 + z * (Y - nyz / 2) / nyz;
+    // let newXyzs = [[x, y, z], ...JSON.parse(JSON.stringify(xyzs))];
+    // setXyzs(newXyzs);
+    // console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY, z)
+  }
+
+  useEffect(() => {
+    let interval = null;
+    if (down) {
+      // console.log(X, Y, z);
+      let x = nx / 2 + z * (X - nx / 2) / nyz;
+      let y = nyz / 2 + z * (Y - nyz / 2) / nyz;
+      setXyzs([[x, y, z], ...xyzs.slice(z === nyz ? 0 : 1)]);
+      interval = setInterval(() => {
+        setZ(z => z - 1);
+      }, 1);
+    } else if (!down && z !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [down, z]);
+
+  // const tick = () => {
+  //   setZ(z + 10);
+  // }
+
   return (
     <>
       <div className="top">
@@ -181,7 +223,9 @@ const App = () => {
 
         <div className="right"
           style={{height:`${nyz}px`, width: `${nx}px`}}
-          onClick={handleClick}
+          // onClick={handleClick}
+          onMouseDown={handleDown}
+          onMouseUp={handleUp}
         >
           {/* {itin.map((itin, index) => {
             return itin.map((townIndex, itinIndex) => {
