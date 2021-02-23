@@ -193,47 +193,78 @@ const App = () => {
           In this classical NP-hard computing problem, a salesman plans a route which enables him/her to leave home and visit all <i>N</i> points in that region while traveling the shortest possible distance.  You may implement this planning algorithm either in two dimensions (the traditional problem) or in three (as for a galactic salesman who visits different planets).
           Each control below has a place where you can click '<img src={info} alt="Show information." />/<img src={cancel} alt="Hide information." />' in order to toggle the display of information about the particular control.
         </p>
-        <div><span>
-          <select value={dim} onChange={e => {
-            let newDim = Number(e.target.value);
-            setDim(newDim);
-            if (newDim === 2) setXyzs([[nx / 2, nyz / 2, 3 * nyz / 4]]);
-          }}>
-            {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option} </option>)}
-          </select>&nbsp;
-          Select the dimensionality of the salesman's region.
-          &nbsp;<ToggleInfo onClick={handleToggle} name="dim" toggle={showInfo.dim} />
-          &nbsp;<i>{showInfo.dim ? text.dim : null}</i>
-        </span></div>
-        {!dim ? null : <div><span>
-          <input type="number" min="0" step="1" value={n}
-            onChange={e => setN(Number(e.target.value))}
-          />&nbsp;
-          Specify the number of points along the salesman's route.
-          &nbsp;<ToggleInfo onClick={handleToggle} name="n" toggle={showInfo.n} />
-          &nbsp;<i>{showInfo.n ? text.n : null}</i>
-        </span></div>}
-        {!n ? null : <div><span>
-          <select value={choose} onChange={e => {
-            let newChoose = Number(e.target.value);
-            setChoose(newChoose);
-            if (newChoose === 1) {
-              let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...xyzs];
-              setXyzs(newXyzs);
-              setInterTownDistances(lookup(newXyzs));
-            }
-          }}>
-            {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
-          </select>&nbsp;
-          Specify whether these points should be chosen randomly or by clicking.
-          &nbsp;<ToggleInfo onClick={handleToggle} name="choose" toggle={showInfo.choose} />
-          &nbsp;<i>{showInfo.choose ? text.choose : null}</i>
-        </span></div>}
+        <table>
+          <thead><tr></tr></thead>
+          <tbody>
+            <tr>
+              <td>
+                <select value={dim} onChange={e => {
+                  let newDim = Number(e.target.value);
+                  setDim(newDim);
+                  if (newDim === 2) setXyzs([[nx / 2, nyz / 2, 3 * nyz / 4]]);
+                }}>
+                  {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option} </option>)}
+                </select>&nbsp;
+              </td>
+              <td style={{whiteSpace: "nowrap"}}>
+                Select the dimensionality of the salesman's region.
+              </td>
+              <td>
+                &nbsp;<ToggleInfo onClick={handleToggle} name="dim" toggle={showInfo.dim} />
+              </td>
+              <td>
+                &nbsp;<i>{showInfo.dim ? text.dim : null}</i>
+              </td>
+            </tr>
+            {!dim ? null : <tr>
+              <td>
+                <input type="number" min="0" step="1" value={n}
+                  onChange={e => setN(Number(e.target.value))}
+                />&nbsp;
+              </td>
+              <td style={{whiteSpace: "nowrap"}}>
+                Specify the number of points along the salesman's route.
+              </td>
+              <td>
+                &nbsp;<ToggleInfo onClick={handleToggle} name="n" toggle={showInfo.n} />
+              </td>
+              <td>
+                &nbsp;<i>{showInfo.n ? text.n : null}</i>
+              </td>
+            </tr>}
+            {!n ? null : <tr>
+              <td>
+                <select value={choose} onChange={e => {
+                  let newChoose = Number(e.target.value);
+                  setChoose(newChoose);
+                  if (newChoose === 1) {
+                    let newXyzs = [...setTowns(n, nx, nyz, zmin, dim), ...xyzs];
+                    setXyzs(newXyzs);
+                    setInterTownDistances(lookup(newXyzs));
+                  }
+                }}>
+                  {['rand or click?', 'random', 'click'].map((option, i) => <option key={i} value={i}>{option} </option>)}
+                </select>&nbsp;
+              </td>
+              <td style={{whiteSpace: "nowrap"}}>
+                Specify if points should be chosen randomly or by clicking.
+              </td>
+              <td>
+                &nbsp;<ToggleInfo onClick={handleToggle} name="choose" toggle={showInfo.choose} />
+              </td>
+              <td>
+                &nbsp;<i>{showInfo.choose ? text.choose : null}</i>
+              </td>
+            </tr>}
+          </tbody>
+        </table>
+
       </div>
+
       <div className="container">
+
         <div className="left">
           {done ? <><br/><div style={{color: "blue"}}>FINISHED!</div><br/></> : null}
-
           {!(n && xyzs.length === n + 1 && !down) ? null :
             <>
               {start ? null : <button onClick={() => setStart(true)}>Start</button>}
@@ -262,24 +293,15 @@ const App = () => {
           onMouseDown={handleDown}
           onMouseUp={handleUp}
         >
-          {/* {itin.map((itin, index) => {
-            return itin.map((townIndex, itinIndex) => {
-              return (itinIndex === itin.length - 1) ? null :
-                <Line key={itinIndex} index={index}
-                  xi={xys[townIndex][0]} xf={xys[itin[itinIndex + 1]][0]}
-                  yi={xys[townIndex][1]} yf={xys[itin[itinIndex + 1]][1]}
-                />
-            })
-          })} */}
           {xyzs.map((xyz, index) => (
             <>
-            <Dot key={index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} nx={nx} nyz={nyz} />
-            <Dot key={"dashed" + index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} nx={nx} nyz={nyz} dashed={true} />
+              <Dot key={index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} nx={nx} nyz={nyz} />
+              <Dot key={"dashed" + index} x={xyz[0]} y={xyz[1]} z={xyz[2]} index={index} d={d} nx={nx} nyz={nyz} dashed={true}/>
             </>
           ))}
           {!start ? null : itin.map((townIndex, itinIndex) => {
             return (itinIndex === itin.length - 1) ? null :
-                <>
+              <>
                 <Line key2={itinIndex} key={'bot' + townIndex + ' ' + itin[itinIndex + 1]}
                   d={d} nx={nx} nyz={nyz} zmin ={zmin}
                   xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
@@ -304,7 +326,7 @@ const App = () => {
                   yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
                   zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
                 />
-                </>
+              </>
           })}
         </div>
       </div>
