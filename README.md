@@ -1,45 +1,241 @@
 
+![Traveling Salesperson Problem](public/screenshot3d.png)
+The [traveling salesperson problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) (TSP) is a classic [*NP*-hard](https://en.wikipedia.org/wiki/NP-hardness) optimization problem in computer science, in which a fixed set of points ("towns") must be connected by a path which is as short as possible. My app uses JavaScript to construct a brute-force TSP solution and which uses React to render the results.
+I used this [skeleton](https://github.com/mars/create-react-app-buildpack#user-content-quick-start) for my front-end project.  Although the classic TSP involves a two-dimensional region, I've inserted the option for the user to do it for a three dimensional one, in which case I refer to the points as planets rather than towns.  The dimensionality of the problem does not affect the algorithm for determining the optimal path, but it does affect the selection of the point-coordinates and the rendering of the routes.
 
-Skeleton:
-https://github.com/mars/create-react-app-buildpack#user-content-quick-start
+In two dimensions, the region is simply a 1500-px (= <tt>nx</tt>) x 600-px (= <tt>nyz</tt>) rectangle which corresponds to most of bottom part of the screen on my computer. In three dimensions I simulate the additional dimension through standard use of [graphical perspective](https://en.wikipedia.org/wiki/Perspective_graphical) when rendering both the planets and the paths between them.  Put simply: "Objects closer to the viewer appear larger."  The three-dimensional region consists of a pyramidal [frustum](https://en.wikipedia.org/wiki/Frustum) whose base coincides with the aforementioned two-dimensional region, and whose interior extends towards the viewer who is 600px (= <tt>nyz</tt>) away from the base.  If the pyramid had an apex, it would coincide with the viewer's eyeball.  Instead, the top 20px (= <tt>zMin</tt>) of the pyramid is sliced off (thereby making it a frustum).  Planets closest to the viewer are hence simulated to be 20px away, where they appear to have a large - but finite - diameter.  The use of the region's pyramidal shape ensures that no planet contained therein will be outside of the range of the user's vision.  In other words, all of the region's
+ planets must appear on the computer screen.
 
-3-d region occupied by "planets": 1500-px wide x 600-px tall x 600-px deep, pyramidally shaped.
-x, y, and z are 3-d coords
-z = 0 at viewer, z>0 otherwise, zmin = 10px
-objects closer to view appear larger (apparent lateral size inversely proportional to z: viewer distance)
-X and Y are apparent lateral positions of planets, expanded more if closer to viewer
-borders of paths between planets = segment that is tangent to both planets
-2 x 2 = 4 components: atop vs below, and solid (zIndex = -z) vs dashed (zIndex = 0)
+In my code all coordinates are non-negative. The capitalized letters *X* and *Y* represent the *apparent* lateral positions of the centers each of the planets. Zero values for each of these correspond to the left and the top of the screen region, respectively, and increasing values for each of these corresponds to the directions right and down (the screen), respectively. I use the lower-case letters *x*, *y*, and *z* to represent the *absolute* (ie, non-apparent) coordinates of each of the planets.  *z* = 0 corresponds to the user's eyes, and increasing *z* corresponds to moving away from the user.  The code below shows both the relationship between absolute coordinates (*x*, *y*, *z*) and apparent coordinates (*X*, *Y*) and also the way that the planet coordinates are confined inside the pyramidal frustum, when those coordinates are chosen randomly.  (Later I'll discuss how planet coordinates may be chosen *non*randomly.)
 
-middle column is factorial base:
+```
+const setTowns = (n, nx, nyz, zMin, dim) => {
+    // randomly create the coordinates of the towns to be visited by salesperson
+    const xs = [];
+    const ys = [];
+    const zs = [];
+    while (xs.length < n) {
+        const x = Math.floor(nx * Math.random());
+        const y = Math.floor(nyz * Math.random());
+        // For 2-d case (dim = 1), constrain towns to be along base of pyramid.
+        const z = zMin + Math.floor(nyz * (dim === 1 ? 1 : Math.random()));
+        const ix = xs.indexOf(x);
+        const iy = ys.indexOf(y);
+        const iz = zs.indexOf(z);
+        // Include a point only if it does not coincide with an existing one.
+        if (ix === -1 || iy === -1 || iz === -1 || ix !== iy || ix !== iz) {
+            // (nx/2, ny/2) represent the center of the screen.
+            // Transformation from absolute (x,y,z) to apparent (X, Y) coordinates.
+            // Note that the lateral coordinate's deviation from screen-center is inversely proportional to z.
+            let X = nx/2 + nyz * (x - nx/2)/z;
+            let Y = nyz/2+ nyz * (y - nyz/2)/z;
+            // Only include points within the viewing region.
+            if (0 <= X && 0 <= Y && X < nx && Y < nyz) {
+                xs.push(x);
+                ys.push(y);
+                zs.push(z);
+            }
+        }
+    }
+    return xs.map((x, i) => [x, ys[i], zs[i]]);
+}
+export default setTowns;
+```
+Any non-approximate TSP solution must consider each of the *n*! possible paths (or "itineraries").
+Below is my iterative calculation of this factorial.
+```
+let newFacPerm = 1;
+for(let i = 1; i <= n; i ++) newFacPerm *= i;
+setFacPerm(newFacPerm);
+```
+Central to the solution's validity is the ability to enumerate the *n*! itineraries, as I do in the following for-loop.
+```
+// loop over all permutations (ie, all possible itineraries)
+    for(let iterPerm = iterPermI; iterPerm < facPerm; iterPerm ++){
+```
+In this loop <tt>iterPermI</tt> is the initial (<tt>I</tt>) permanent (<tt>Perm</tt>) value of the iteration (<tt>iter</tt>) variable, which is initialized at 0 when the loop starts.  On each occasion that the algorithm finds a path-length which is smaller than any previously found, the loop is broken so that the best itinerary (<tt>itin</tt>) found thus far can be rendered, and this necessitates the reassignment of the (next) initial value of the iteration variable <tt>iterPerm</tt>, in preparation for the next entry to the all-important loop (which actually is an outer loop).
+```
+if (distanceTot < distanceMin[0]) {
+    // Replace the existing itinerary with the current one
+    setItin(newItin);
+    setDistanceMin([distanceTot, ...distanceMin]);
+    setNextIterPermI(iterPerm + 1);
+    setMemo(newMemo);
+    break;
+}
+```
+The <tt>Perm</tt> suffix reflects the fact that I need to mutate a copy (<tt>iter</tt>) of this variable  in order to construct each unique itinerary.  My process for constructing the itinerary is to express the value of the iteration variable <tt>iterPerm</tt> in a [factorial number system](https://en.wikipedia.org/wiki/Factorial_number_system), which is sometimes called "factorial base" or "factoradic".  Each <tt>digit</tt> of this factorially-based representation of <tt>iterPerm</tt> is then used to splice the index of a particular town from a working array <tt>range</tt>, whose initial value is simply [0, 1, 2, ..., *n* - 1].  This involves the inner (backwards running) loop shown below (minus some memoization, which I'll described soon).
+```
+    let iter = iterPerm;
+    let range = new Array(n).fill(0).map((blah, i) => i); // = [0, 1, 2, ..., n - 1]
+    let fac = facPerm; // copy of n! which'll get mutated in following loop
+    let newItin = [];
+    // determination of digits (most significant first) of factorial-base representation of iterPerm
+    for(let place = n - 1; place >= 0; place --){
+        let i = n - 1 - place;
+        fac /= (place + 1); // replace n! by (n-1)!
+        let digit = Math.floor(iter/fac); // next digit in factorial representation
+        let index = range.splice(digit,1)[0]; // next town index in itinerary
+        newItin.push(index);
+        distanceTot += interTownDistances[indexLast][index]];
+        iter -= digit * fac; // mutate iter before getting the next factorially-based digit
+        indexLast = index; // keep track of the indices of the two towns to be connected
+    }
+```
+As an example of transforming a number from base-10 to factorial base,
+consider the case of the factorially-based representation of "fifteen".
 
-factorial base,
-lexographic ordering needed in order to have a highly reusable (ie, small) memo.  Space complexity = ?
+15<sub>10</sub> = 2 * 6 + 1 * 2 + 1 * 1 + 0 * 1 = 2 * 3! + 1 * 2! + 1 * 1! + 0 * 0! = 2110<sub>!</sub>.
 
-permutations:
-iterPerm -> itin:
-e.g.: n = 4 and iterPerm = 07 -> 1010 -> 1(023), 10(23), 103(2), 1032
-*00(23) -> 0000(3210) -> 0123
-01(17) -> 0010(2210) -> 0132
-*02(21) -> 0100(3110) -> 0213
-03(11) -> 0110(1210) -> 0231
-04(15) -> 0200(2110) -> 0312
-05(09) -> 0210(1110) -> 0321
-06(22) -> 1000(3200) -> 1023
-*07(16) -> 1010(2200) -> 1032
-08(19) -> 1100(3010) -> 1203
-09(05) -> 1110(0210) -> 1230
-*10(13) -> 1200(2010) -> 1302
-11(03) -> 1210(0110) -> 1320
-12(20) -> 2000(3100) -> 2013
-*13(10) -> 2010(1200) -> 2031
-14(18) -> 2100(3000) -> 2103
-15(04) -> 2110(0200) -> 2130
-*16(07) -> 2200(1010) -> 2301
-17(01) -> 2210(0010) -> 2310
-18(14) -> 3000(2100) -> 3012
-19(08) -> 3010(1100) -> 3021
-20(12) -> 3100(2000) -> 3102
-*21(02) -> 3110(0100) -> 3120
-22(06) -> 3200(1000) -> 3201
-*23(00) -> 3210(0000) -> 3210
+In order to use this representation to construct a unique permutation of <tt>range</tt> = [0, 1, 2, 3], successively splice <tt>range</tt> at these indices (2, 1, 1, and 0) and accumulate the output to get 2130.
+While there are several other ways to enumerate permutations, the advantage to using the factorial number system is that the resulting array of itineraries is automatically ordered.  For instance the array of 24 permutations of 0123 would be returned as [0123, 0132, 0213, ..., 3201, 3210].  The advantage of this ordering is that there is a high probability that adjacent itineraries in this list'll include a sub-route in common, and this likelihood of commonality means that some parts of the calculation of the total distance for a particular itinerary can be memoized through the use of a slightly nested array whose length is *n*.  Below is the part of the code from above which now includes this memoization.
+``` // same code as above, except that areSame is initialized as true before inner loop
+    newItin.push(index);  // from code listed above
+    areSame = areSame && memo[i] && memo[i][0] === index; // update boolean which dictates memo usage
+    // ... if existing element in memo cannot be used, then reassign it
+    if (!areSame) memo[i] = [index, distanceTot + interTownDistances[indexLast][index]];
+    distanceTot = memo[i][1];
+    iter -= digit * fac; // remaining lines are same
+    indexLast = index
+}
+```
+As mentionned previously, each time the outer loop encounters a new minimum in the path length, it breaks out of the loop in order to render the route before returning to the loop to look for further improvements.  In addition to rendering the route, the code also displays the newly minimum distance at the end of the list of corresponding values for previous candidates.  Despite the fact that these re-renders occur at a particular frequency, for larger *n* that frequency is low enough that the browser complains, sending an alert that the page is nonresponsive.  In order to avoid this and to otherwise create a better user experience, I've installed an additional break in the loop, every time that the percentage of routes checked equals an exact tenth of a percentage point (which usually occurs frequently enough that the browser does not complain).
+```
+// Break in order to display the next 0.1% of progress.
+      if (!(1000 * iterPerm % facPerm)) {
+        setNextIterPermI(iterPerm + 1);
+        break;
+      }
+```
+Towns/planets are rendered as circles with the following css.
+```
+.dot {
+    box-sizing: border-box;
+    border: solid 1px black;
+    position: absolute;
+    border-radius: 50%;
+}
+```
+Their absolute positionning makes it easy to position them on the parent (positionned) element.  Coordinates and other variables are threaded to the <tt>Dot</tt> component which is rendered for each town/planet.  Actually, *two* <tt>Dot</tt> components are rendered for each planet, one either either boolean value of <tt>dashed</tt>.  Those having <tt>dashed</tt> = false have a negative zIndex whose absolute value equals <tt>z</tt>, so planets closer to the viewer will obscure those farther away.  Those having <tt>dashed</tt> = true are transparent and have a zIndex value of zero, which means - because zero exceeds all of the negative values will not get obscured by any planet.  The net effect of this is that there will always be a dashed line which indicates the boundary of the planet, even if it is behind another planet.  The apparent diameter <tt>d</tt> of each planet is inversely proportional to <tt>z</tt>, thereby providing perspective.
+```
+const Dot = ({ x, y, z, d, nx, nyz, dashed}) => {
+    // convert fixed diameter to its z-dependent one
+    d = nyz * d / z;
+    // convert from absolute lateral coordinates to apparent lateral coordinates for rendering purposes
+    let X = nx/2 + nyz * (x - nx/2)/z;
+    let Y = nyz/2+ nyz * (y - nyz/2)/z;
+    return (
+        <div className="dot" style={{
+            width:`${d}px`,
+            height:`${d}px`,
+            // positions must be offset by d/2 because boxes are positionned by upper-left corner.
+            left: `${X - d / 2}px`,
+            top: `${Y - d / 2}px`,
+            // if dashed == true, this will ALWAYS render, as a dashed circle
+            // if dashed == false, this will only render if nothing is above it
+            zIndex: `${dashed ? 0 : -z}`,
+            backgroundColor: `${dashed ? "transparent" : "lightgray"}`,
+            borderStyle: `${dashed ? "dashed" : "solid"}`
+        }}/>
+    )
+}
+```
+The rendering of the path between planets by the <tt>Line</tt> component is a bit trickier.  In order to contribute to the sense of perspective, I need to use two non-parallel lines to connect planets which are adjacent in the itinerary. The simplest way to bestow these line-pairs with the same sense of perspective as has been bestowed upon the planets is to make each line (in the pair) tangent to opposite sides of the each planet in the pair. I do this through the use of trigonometry and the css transform attribute.  The "which" prop is a boolean that controls which of these two lines I am considering.  When combined with the "dashed" prop described for the <tt>Dot</tt> component, this leads to a total of four instances of the <tt>Line</tt> component for each planet.  With regards to proper use of zIndex, I had to settle for a compromise.  Ideally each pixel of the the line would have a different zIndex (in light of the fact that it is not parallel to the screen for the 3-dimensional case), but a component can only have single-valued zIndices.  Accordingly, I set this to be the average of the zIndices of the two connected planets, and the result is satisfactory.
+```
+const Line = ({ xi, yi, zi, xf, yf, zf, d, which, nx, nyz, dashed }) => {
+    // apparent diameters of planets at either end of line
+    let di = nyz * d * (which ? 1 : -1) / zi;
+    let df = nyz * d * (which ? 1 : -1) / zf;
+
+    //convert from actual lateral coordinates to apparent later coordinates
+    let Xi = nx/2 + nyz * (xi - nx/2)/zi;
+    let Yi = nyz/2+ nyz * (yi - nyz/2)/zi;
+    let Xf = nx/2 + nyz * (xf - nx/2)/zf;
+    let Yf = nyz/2+ nyz * (yf - nyz/2)/zf;
+
+    // I choose the offset (0.5) so that the lines will be tangent to the planets
+    let offi = di / 2;
+    let offf = df / 2;
+    let doff = offf - offi;
+    // The following two lines represent the two sides of a right triangle.
+    const dX = Xf - Xi;
+    const dY = Yf - Yi;
+
+    // Pythagorean theorem
+    const R = Math.sqrt(dX * dX + dY * dY);
+    const R2= Math.sqrt(R*R - doff * doff);
+    // "TOA" part of "SOHCAHTOA", but for two angles
+    let angle = Math.atan2(dY, dX);
+    const angle2 = Math.atan2(doff, R2);
+    angle -= angle2;
+    return (
+        <div className="line" style={{
+            width:`${R2}px`,
+            left: `${Xi - R2 / 2 + (di / 2) * Math.sin(angle)}px`,
+            top: `${Yi - (di / 2) * Math.cos(angle)}px`,
+            transform: `rotate(${angle * 180 / Math.PI}deg) translateX(${R2 / 2}px)`,
+            borderTopStyle: `${dashed ? "dashed" : "solid"}`,
+            zIndex: `${dashed ? 0 : -(zi + zf) / 2}`
+        }}/>
+    )
+}
+```
+The app has three inputs.  The first is a straightforward binary choice: 2-dimensional or 3-dimensional.  The second is also straightforward: specifying the value of *n*.  The third is also a straightforward binary choice: specifying whether the planet coordinates should be random or whether the user should pick by them.  If the user chooses "random", then there is nothing else to do except click <tt>Start</tt>.  However if the user chooses "pick" then he/she must use the mouse to pick coordinates.  How this is done depends upon whether the user has chosen 2-d or 3-d.
+
+Either case requires the user to click various locations on screen in order to choose town/planet coordinates (instantly rendering a new circle in each case).  Below are shown a subset of the lines of code from the mouseDown event-handler responsible for recording the coordinates for the 2-d case.  Note that - in the 2-d case - each town's <tt>z-</tt> coordinate is set at <tt>nyz</tt>, which corresponds to the "altitude" of the computer screen (from the user's eye).
+```
+const handleDown = e => {
+    // disable event listener when enough points have been clicked
+    if (xyzs.length === n + 1) return;
+    let newX = e.nativeEvent.offsetX;
+    let newY = e.nativeEvent.offsetY;
+    setXyzs([[newX, newY, nyz], ...xyzs]);
+}
+```
+It is trickier to enable the user to specify the <tt>z-</tt> coordinate for the 3-d case.  I opted to accomplish this by allowing a decrease of <tt>z</tt> to mirror the passage of time.  Specifically, the app measures the amount of time that the user clicks the mouse down (before releasing it), and it sets the amount that <tt>z</tt> decreases (in px) from its maximum possible value (<tt>nyz</tt>) to equal the number of ms that the mouse was depressed, but preventing this value from ever being to close to the user.  This requires three things:
+1) For best user experience, the mouseDown event-handler must measure apparent lateral coordinates (<tt>X</tt>, <tt>Y</tt>) as opposed to actual lateral coordinates (<tt>x</tt>, <tt>y</tt>).
+2) A useEffect equipped with a setInterval invocation measures time since the mouseDown and systematically adjusts <tt>z</tt> (and <tt>x</tt> and <tt>y</tt>) for the new planet.
+3) A mouseUp event-handler stops the timing process for each planet.
+Below are these three pieces of code.
+1)
+```
+const handleDown = e => {
+    // disable event listener when enough points have been clicked
+    if (xyzs.length === n + 1) return;
+    setDown(true);
+    // following two setters are for apparent - not actual - lateral position
+    let newX = e.nativeEvent.offsetX;
+    let newY = e.nativeEvent.offsetY;
+    setX(newX);
+    setY(newY);
+    // The point should start at the most distant location, if this is 3-d.
+    setZ(nyz);
+    // This will render the new planet during the mouse depression.
+    setXyzs([[newX, newY, nyz], ...xyzs]);
+}
+```
+2)
+```
+useEffect(() => {
+    let interval = null;
+    if (down) {
+      let x = nx / 2 + z * (X - nx / 2) / nyz;
+      let y = nyz / 2 + z * (Y - nyz / 2) / nyz;
+      setXyzs([[x, y, z], ...xyzs.slice(1)]);
+      // the z-coordinate will decrease by 1 px w/each passing ms.
+      interval = setInterval(() => {
+        setZ(z => Math.max(z - (dim === 1 ? 0 : 1), zMin));
+      }, 1);
+    } else if (!down && z !== nyz) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+}, [down, z, X, Y, dim]);
+```
+3)
+```
+const handleUp = e => {
+    setDown(false);
+    setInterTownDistances(lookup(xyzs));
+}
+```

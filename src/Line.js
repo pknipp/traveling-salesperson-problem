@@ -1,14 +1,17 @@
 import React from "react";
 
-const Line = ({ xi, yi, zi, xf, yf, zf, index, d, which, nx, nyz, dashed }) => {
+const Line = ({ xi, yi, zi, xf, yf, zf, d, which, nx, nyz, dashed }) => {
+    // apparent diameters of planets at either end of line
     let di = nyz * d * (which ? 1 : -1) / zi;
     let df = nyz * d * (which ? 1 : -1) / zf;
 
+    //convert from actual lateral coordinates to apparent later coordinates
     let Xi = nx/2 + nyz * (xi - nx/2)/zi;
     let Yi = nyz/2+ nyz * (yi - nyz/2)/zi;
     let Xf = nx/2 + nyz * (xf - nx/2)/zf;
     let Yf = nyz/2+ nyz * (yf - nyz/2)/zf;
 
+    // I choose the offset (0.5) so that the lines will be tangent to the planets
     let offi = di / 2;
     let offf = df / 2;
     let doff = offf - offi;
@@ -30,7 +33,7 @@ const Line = ({ xi, yi, zi, xf, yf, zf, index, d, which, nx, nyz, dashed }) => {
             top: `${Yi - (di / 2) * Math.cos(angle)}px`,
             transform: `rotate(${angle * 180 / Math.PI}deg) translateX(${R2 / 2}px)`,
             borderTopStyle: `${dashed ? "dashed" : "solid"}`,
-            zIndex: `${dashed ? 0 : -Math.min(zi, zf)}`
+            zIndex: `${dashed ? 0 : -(zi + zf) / 2}`
         }}/>
     )
 }
