@@ -79,6 +79,7 @@ const App = () => {
       let iter = iterPerm;
       // range = [0, 1, 2, ...], which is used to generated permutations
       let range = new Array(n).fill(0).map((blah, i) => i);
+      let dIter = Math.round(facPerm/1000);
       let fac = facPerm;
       let newItin = [];
       // flag used to determine whether or not memo can be used
@@ -115,7 +116,8 @@ const App = () => {
         break;
       }
       // Break in order to display the next 0.1% of progress.
-      if (!(1000 * iterPerm % facPerm)) {
+      // Before both loops, dIter was defined to be Math.round(facPerm/1000)
+      if (!(iterPerm % dIter)) {
         setNextIterPermI(iterPerm + 1);
         break;
       }
@@ -146,13 +148,15 @@ const App = () => {
     setY(newY);
     // The point should start at the most distant location, if this is 3-d.
     setZ(nyz);
+    let newXyzs = [[newX, newY, nyz], ...xyzs];
     // This will render the new planet during the mouse depression.
-    setXyzs([[newX, newY, nyz], ...xyzs]);
+    setXyzs(newXyzs);
+    setInterTownDistances(lookup(xyzs));
   }
 
   const handleUp = e => {
-    setDown(false);
-    setInterTownDistances(lookup(xyzs));
+    // setDown(false);
+    // setInterTownDistances(lookup(xyzs));
   }
 
   useEffect(() => {
