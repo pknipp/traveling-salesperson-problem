@@ -21,7 +21,7 @@ I used this [skeleton](https://github.com/mars/create-react-app-buildpack#user-c
 
 [return to "Contents"](#contents)
 
-[go to next section ("outer loop")](#outer-loop-(route-permutations))
+[go to next section ("outer loop")](#outer-loop-route-permutations)
 
 In two dimensions, the region is simply a 1500px (= <tt>nx</tt>) x 600px (= <tt>nyz</tt>) rectangle which corresponds to most of bottom part of the screen on my computer. In three dimensions I simulate the additional dimension through standard use of [graphical perspective](https://en.wikipedia.org/wiki/Perspective_graphical) when rendering both the planets and the paths between them.  Put simply: "Objects closer to the viewer appear larger."  The three-dimensional region consists of a pyramidal [frustum](https://en.wikipedia.org/wiki/Frustum) whose base coincides with the aforementioned two-dimensional region, and whose interior extends towards the viewer who is 600px (= <tt>nyz</tt>) away from the base.  If the pyramid had an apex, it would coincide with the viewer's eyeball.  Instead, the top 20px (= <tt>zMin</tt>) of the pyramid is sliced off (thereby making it a frustum).  Planets closest to the viewer are hence simulated to be 20px away, where they appear to have a large - but finite - diameter.  The use of the region's pyramidal shape ensures that no planet contained therein will be outside of the range of the user's vision.  In other words, all of the region's
  planets must appear on the computer screen.
