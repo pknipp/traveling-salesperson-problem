@@ -4,7 +4,7 @@
 
 [Geometry](#geometry)
 
-[Outer loop (route permutations)](#outer-loop-(route-permutations))
+[Outer loop (route permutations)](#outer%20loop%20(route%20permutations))
 
 [Inner loop (towns in route)](#inner-loop-(towns-in-route))
 
