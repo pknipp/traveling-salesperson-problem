@@ -66,7 +66,7 @@ const setTowns = (n, nx, nyz, zMin, dim) => {
 
 [go to previous section("geometry")](#geometry)
 
-[go to next section ("inner loop")](#inner-loop-(towns-in-route))
+[go to next section ("inner loop")](#inner-loop-towns-in-route)
 
 Any non-approximate TSP solution must consider each of the *n*! possible paths (or "itineraries").
 Below is my iterative calculation of this factorial.
@@ -108,9 +108,9 @@ if (distanceTot < distanceMin[0]) {
 
 [return to Contents](#contents)
 
-[go to previous section ("outer loop")](#outer-loop-(route-permutations))
+[go to previous section ("outer loop")](#outer-loop-route-permutations)
 
-[go to next section ("rendering a town")](#rendering-a-town/planet)
+[go to next section ("rendering a town")](#rendering-a-townplanet)
 
 The <tt>Perm</tt> suffix reflects the fact that I need to mutate a copy (<tt>iter</tt>) of this variable  in order to construct each unique itinerary.  My process for constructing the itinerary is to express the value of the iteration variable <tt>iterPerm</tt> in the [factorial number system](https://en.wikipedia.org/wiki/Factorial_number_system), which is sometimes called "factorial base" or "factoradic".  Each <tt>digit</tt> of this factorially-based representation of <tt>iterPerm</tt> is then used to splice the index of a particular town from a working array <tt>range</tt>, whose initial value is simply [0, 1, 2, ..., *n* - 1].  This involves the inner (backwards running) loop shown below (minus some memoization, which I'll described soon).
 ```
@@ -161,9 +161,9 @@ As mentionned previously, each time the outer loop encounters a new minimum in t
 
 [return to "Contents"](#contents)
 
-[go to previous section ("inner loop")](#inner-loop-(towns-in-route))
+[go to previous section ("inner loop")](#inner-loop-towns-in-route)
 
-[go to next section ("rendering a route")](#rendering-a-route-between-two-towns/planets)
+[go to next section ("rendering a route")](#rendering-a-route-between-two-townsplanets)
 
 Towns/planets are rendered as circles with the following css.
 ```
@@ -202,9 +202,9 @@ const Dot = ({ x, y, z, d, nx, nyz, dashed}) => {
 
 [return to "Contents"](#contents)
 
-[go to previous section ("rendering a town")](#rendering-a-town/planet)
+[go to previous section ("rendering a town")](#rendering-a-townplanet)
 
-[go to next section ("inputting coordinates")](#inputting-coordinates-of-a-town/planet)
+[go to next section ("inputting coordinates")](#inputting-coordinates-of-a-townplanet)
 
 The rendering of the path between planets by the <tt>Line</tt> component is a bit trickier.  In order to contribute to the sense of perspective, I need to use two non-parallel lines to connect planets which are adjacent in the itinerary. The simplest way to bestow these line-pairs with the same sense of perspective as has been bestowed upon the planets is to make each line (in the pair) tangent to opposite sides of the each planet in the pair. I do this through the use of trigonometry and the css <tt>transform</tt> attribute.  The <tt>which</tt> prop is a boolean that controls which of these two lines I am considering.  When combined with the <tt>dashed</tt> prop described for the <tt>Dot</tt> component, this leads to a total of four instances of the <tt>Line</tt> component for each planet.  With regards to proper use of <tt>zIndex</tt>, I had to settle for a compromise.  Ideally each pixel of the the line would have a different <tt>zIndex</tt> (in light of the fact that it is not parallel to the screen for the 3-dimensional case), but any single component can have one value of <tt>zIndex</tt>.  Accordingly, I set this to be the average values of <tt>zIndex</tt> for the two connected planets.  The result is quite satisfactory.
 ```
@@ -250,7 +250,7 @@ const Line = ({ xi, yi, zi, xf, yf, zf, d, which, nx, nyz, dashed }) => {
 
 [return to "Contents"](#contents)
 
-[go to previous section("rendering a route")](#rendering-a-route-between-two-towns/planets)
+[go to previous section("rendering a route")](#rendering-a-route-between-two-townsplanets)
 
 The app has three inputs.  The first is a straightforward binary choice: 2-dimensional or 3-dimensional.  The second is also straightforward: specifying the value of *n*.  The third is also a straightforward binary choice: specifying whether the planet coordinates should be random or whether the user should pick by them.  If the user chooses "random", then there is nothing else to do except click <tt>Start</tt>.  However if the user chooses "pick" then he/she must use the mouse to pick coordinates.  How this is done depends upon whether the user has chosen 2-d or 3-d.
 
@@ -314,4 +314,4 @@ The resulting mechanism is very easy to use.
 
 [return to "Contents"](#contents)
 
-[return to beginning of this section ("inputting coordinates")](#inputting-coordinates-of-a-town/planet)
+[return to beginning of this section ("inputting coordinates")](#inputting-coordinates-of-a-townplanet)
