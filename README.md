@@ -2,6 +2,8 @@
 ![Traveling Salesperson Problem](public/screenshot.png)
 # Contents
 
+[Heroku deployment](https://traveling-salesperson-problem.herokuapp.com)
+
 [Geometry](#geometry)
 
 [Outer loop (route permutations)](#outer-loop-route-permutations))
@@ -14,7 +16,7 @@
 
 [Inputting coordinates of a town/planet](#inputting-coordinates-of-a-townplanet)
 
-The [traveling salesperson problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) (TSP) is a classic [*NP*-hard](https://en.wikipedia.org/wiki/NP-hardness) optimization problem in computer science, in which a fixed set of points ("towns") must be connected by a path which is as short as possible. My app uses JavaScript to construct a brute-force TSP solution and which uses React to render the results.
+The [traveling salesperson problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) (TSP) is a classic [*NP*-hard](https://en.wikipedia.org/wiki/NP-hardness) optimization problem in computer science, in which a fixed set of points ("towns") must be connected by a path which is as short as possible. My [app](https://traveling-salesperson-problem.herokuapp.com) uses JavaScript to construct a brute-force TSP solution and which uses React to render the results.
 I used this [skeleton](https://github.com/mars/create-react-app-buildpack#user-content-quick-start) for my front-end project.  Although the classic TSP involves a two-dimensional region, I've inserted the option for the user to do it for a three dimensional one, in which case I refer to the points as planets rather than towns.  The dimensionality of the problem does not affect the algorithm for determining the optimal path, but it does affect the selection of the point-coordinates and the rendering of the routes.
 
 # Geometry
