@@ -316,6 +316,8 @@ const handleUp = e => {
 ```
 The resulting mechanism is very easy to use.
 
+I hope that you enjoy planning your trip!
+
 [return to "Contents"](#contents)
 
 [return to beginning of this section ("inputting coordinates")](#inputting-coordinates-of-a-townplanet)
