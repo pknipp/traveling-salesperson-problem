@@ -272,6 +272,7 @@ It is trickier to enable the user to specify the <tt>z-</tt> coordinate for the 
 3) A mouseUp event-handler stops the timing process for each planet.
 
 Below are these three pieces of code, modified as described above but also with a few other minor adjustments.
+1)
 ```
 const handleDown = e => {
     // disable event listener when enough points have been clicked
