@@ -148,15 +148,14 @@ const App = () => {
     setY(newY);
     // The point should start at the most distant location, if this is 3-d.
     setZ(nyz);
-    let newXyzs = [[newX, newY, nyz], ...xyzs];
+    // let newXyzs = [[newX, newY, nyz], ...xyzs];
     // This will render the new planet during the mouse depression.
-    setXyzs(newXyzs);
-    setInterTownDistances(lookup(xyzs));
+    setXyzs([[newX, newY, nyz], ...xyzs]);
   }
 
   const handleUp = e => {
-    // setDown(false);
-    // setInterTownDistances(lookup(xyzs));
+    setDown(false);
+    setInterTownDistances(lookup(xyzs));
   }
 
   useEffect(() => {
@@ -204,6 +203,7 @@ const App = () => {
                 <select value={dim} onChange={e => {
                   let newDim = Number(e.target.value);
                   setDim(newDim);
+                  // This overrides default value of z = nyz.
                   if (newDim === 2) setXyzs([[nx / 2, nyz / 2, 3 * nyz / 4]]);
                 }}>
                   {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option} </option>)}
