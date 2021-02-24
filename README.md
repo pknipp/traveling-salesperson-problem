@@ -17,7 +17,7 @@
 [Inputting coordinates of a town/planet](#inputting-coordinates-of-a-townplanet)
 
 The [traveling salesperson problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) (TSP) is a classic [*NP*-hard](https://en.wikipedia.org/wiki/NP-hardness) optimization problem in computer science, in which a fixed set of points ("towns") must be connected by a path which is as short as possible. My [app](https://traveling-salesperson-problem.herokuapp.com) uses JavaScript to construct a brute-force TSP solution and which uses React to render the results.
-I used this [skeleton](https://github.com/mars/create-react-app-buildpack#user-content-quick-start) for my front-end project.  Although the classic TSP involves a two-dimensional region, I've inserted the option for the user to do it for a three dimensional one, in which case I refer to the points as planets rather than towns.  The dimensionality of the problem does not affect the algorithm for determining the optimal path, but it does affect the selection of the point-coordinates and the rendering of the routes.
+I used this [skeleton](https://github.com/mars/create-react-app-buildpack#user-content-quick-start) for my front-end project.  Although the classic TSP involves a two-dimensional region, I've introduced the option for the user to do it for a three dimensional one, in which case I refer to the points as planets rather than towns.  The dimensionality of the problem does not affect the algorithm for determining the optimal path, but it does affect both the selection of the point-coordinates and the rendering of the routes.
 
 # Geometry
 
@@ -82,7 +82,7 @@ Central to the solution's validity is the ability to enumerate the *n*! itinerar
 // loop over all permutations (ie, all possible itineraries)
     for(let iterPerm = iterPermI; iterPerm < facPerm; iterPerm ++){
 ```
-A key part of this algorithm is the determination of the distance between adjacent towns along the itinerary, which involves the Pythagorean theorem.  Rather than implementing this calculation (which involves a square root) a large number [= *O*(*n*!)] of times, I perform it only  *n*<sup>2</sup> times at the beginning of the calculation, filling up a lookup table in the process for later use.
+A key part of this algorithm is the determination of the distance between adjacent towns along the itinerary, which involves the Pythagorean theorem.  Rather than implementing this calculation (which involves a square root) a large number [= *O*(*n*!)] of times, I perform it only  *n*<sup>2</sup> times at the beginning of the calculation, in the process filling up a [lookup table](https://en.wikipedia.org/wiki/Lookup_table) for later use when determining the total distance for any particular itinerary.
 ```
 const lookup = xyzs => {
     const distance=(x0,x1,y0,y1,z0,z1)=> Math.sqrt((x1-x0)**2+(y1-y0)**2+(z1-z0)**2);
@@ -95,7 +95,7 @@ const lookup = xyzs => {
     return interTownDistances;
 }
 ```
-In the loop, <tt>iterPermI</tt> is the initial (<tt>I</tt>) permanent (<tt>Perm</tt>) value of the iteration (<tt>iter</tt>) variable, which is 0 when the loop starts.  On each occasion that the algorithm finds a path-length which is smaller than any previously found, the loop is broken so that the best itinerary (<tt>itin</tt>) found thus far can be rendered, and this necessitates the reassignment of the (next) initial value of the iteration variable <tt>iterPerm</tt>, in preparation for the next entry to the all-important loop (which actually is an outer loop).
+In the loop, <tt>iterPermI</tt> is the initial (<tt>I</tt>) permanent (<tt>Perm</tt>) value of the iteration (<tt>iter</tt>) variable, which is 0 when the loop starts.  On each occasion that the algorithm finds a path-length which is smaller than any previously found, the loop is broken so that the best itinerary (<tt>itin</tt>) found thus far can be rendered, and this necessitates the reassignment of the (next) initial value of the iteration variable <tt>iterPerm</tt>, in preparation for later re-entry to this all-important loop (which actually is an outer loop).
 ```
 if (distanceTot < distanceMin[0]) {
     // Replace the existing itinerary with the current one
@@ -150,7 +150,7 @@ While there are several other ways to enumerate permutations, the advantage to u
     indexLast = index
 }
 ```
-As mentionned previously, each time the outer loop encounters a new minimum in the path length, it breaks out of the loop in order to render the route before returning to the loop to look for further improvements.  In addition to rendering the route, the code also displays the newly discovered minimum distance at the end of the list of corresponding values for previous candidates.  Despite the fact that these re-renders occur at a particular frequency, for larger *n* that frequency is low enough that the browser complains, sending an alert that the page is nonresponsive.  In order to avoid this and to otherwise create a better user experience, I've installed an additional break in the loop every time that the percentage of routes checked equals an exact tenth of a percentage point (which usually occurs frequently enough that the browser does not complain).
+As mentionned previously, each time the outer loop encounters a new minimum in the path length, it breaks out of the loop in order to render the route before returning to the loop to look for further improvements.  In addition to rendering the route, the code also displays the newly discovered minimum distance at the end of the list of corresponding values for previous candidates.  Despite the fact that these re-renders occur at a particular frequency, for larger *n* that frequency is low enough that the browser posts an alert that the page is nonresponsive.  In order to avoid this and to otherwise create a better user experience, I've installed an additional break in the loop every time that the percentage of routes checked equals an exact tenth of a percentage point (which usually occurs frequently enough that the browser does not complain).
 ```
 // Break in order to display the next 0.1% of progress.
 // Before both loops, I defined dIter as Math.round(facPerm/1000)
@@ -208,7 +208,7 @@ const Dot = ({ x, y, z, d, nx, nyz, dashed}) => {
 
 [go to next section ("inputting coordinates")](#inputting-coordinates-of-a-townplanet)
 
-The rendering of the path between planets by the <tt>Line</tt> component is a bit trickier.  In order to contribute to the sense of perspective, I need to use two non-parallel lines to connect planets which are adjacent in the itinerary. The simplest way to bestow these line-pairs with the same sense of perspective as has been bestowed upon the planets is to make each line (in the pair) tangent to opposite sides of the each planet in the pair. I do this through the use of trigonometry and the css <tt>transform</tt> attribute.  The <tt>which</tt> prop is a boolean that controls which of these two lines I am considering.  When combined with the <tt>dashed</tt> prop described for the <tt>Dot</tt> component, this leads to a total of four instances of the <tt>Line</tt> component for each planet.  With regards to proper use of <tt>zIndex</tt>, I had to settle for a compromise.  Ideally each pixel of the the line would have a different <tt>zIndex</tt> (in light of the fact that it is not parallel to the screen for the 3-dimensional case), but any single component can have one value of <tt>zIndex</tt>.  Accordingly, I set this to be the average values of <tt>zIndex</tt> for the two connected planets.  The result is quite satisfactory.
+The rendering of the path between planets by the <tt>Line</tt> component is a bit trickier.  In order to contribute to the sense of perspective, I need to use two non-parallel lines to connect planets which are adjacent in the itinerary. The simplest way to bestow these line-pairs with the same sense of perspective as has been bestowed upon the planets is to make each line (in the pair) tangent to opposite sides of each planet in the pair. I do this through the use of trigonometry and the css <tt>transform</tt> attribute.  The <tt>which</tt> prop is a boolean that controls which of these two lines I am considering.  When combined with the <tt>dashed</tt> prop described for the <tt>Dot</tt> component, this leads to a total of four instances of the <tt>Line</tt> component for each planet.  With regards to proper use of <tt>zIndex</tt>, I had to settle for a compromise.  Ideally each pixel of the the line would have a different <tt>zIndex</tt> (in light of the fact that it is not parallel to the screen for the 3-dimensional case), but any single component can have one value of <tt>zIndex</tt>.  Accordingly, I set this to be the average values of <tt>zIndex</tt> for the two connected planets.  The result is quite satisfactory.
 ```
 const Line = ({ xi, yi, zi, xf, yf, zf, d, which, nx, nyz, dashed }) => {
     // apparent diameters of planets at either end of line
@@ -254,7 +254,7 @@ const Line = ({ xi, yi, zi, xf, yf, zf, d, which, nx, nyz, dashed }) => {
 
 [go to previous section("rendering a route")](#rendering-a-route-between-two-townsplanets)
 
-The app has three inputs.  The first is a straightforward binary choice: 2-dimensional or 3-dimensional.  The second is also straightforward: specifying the value of *n*.  The third is also a straightforward binary choice: specifying whether the planet coordinates should be random or whether the user should pick by them.  If the user chooses "random", then there is nothing else to do except click <tt>Start</tt>.  However if the user chooses "pick" then he/she must use the mouse to pick coordinates.  How this is done depends upon whether the user has chosen 2-d or 3-d.
+The [app](https://traveling-salesperson-problem.herokuapp.com) has at least three inputs.  The first is a straightforward binary choice: 2-dimensional or 3-dimensional.  The second is also straightforward: specifying the value of *n*.  The third is again a straightforward binary choice: specifying whether the planet coordinates should be random or picked by the user.  If the user chooses "random", then there is nothing left to do except to click <tt>Start</tt>.  However if the user chooses "pick" then he/she must use the mouse to pick coordinates.  How this is done depends upon whether the user has chosen 2-d or 3-d from the first input.
 
 Either case requires the user to click various locations on screen in order to choose town/planet coordinates (instantly rendering a new circle in each case).  Below are shown the lines of code from the mouseDown event-handler required for recording the coordinates for the 2-d case.  Note that - in the 2-d case - each town's <tt>z-</tt> coordinate is set at <tt>nyz</tt>, which corresponds to the "altitude" of the computer screen (from the user's eye).
 ```
@@ -266,11 +266,12 @@ const handleDown = e => {
     setInterTownDistances(lookup(xyzs));
 }
 ```
-It is trickier to enable the user to specify the <tt>z-</tt> coordinate for the 3-d case.  I opted to accomplish this by allowing a decrease of <tt>z</tt> to mirror the passage of time.  Specifically, the app measures the amount of time that the user presses the mouse down (before releasing it), and that sets the amount that <tt>z</tt> decreases (in px) from its maximum possible value (<tt>nyz</tt>) to equal the number of ms that the mouse was depressed, but preventing the <tt>z</tt>-value from ever bringing the planet too close to the user.  This requires three things:
+It is trickier to enable the user to specify the <tt>z-</tt> coordinate for the 3-d case.  I opted to accomplish this by allowing a decrease of <tt>z</tt> to mirror the passage of time.  Specifically, the [app](https://traveling-salesperson-problem.herokuapp.com) measures the amount of time that the user presses the mouse down (before releasing it), and that sets the amount that <tt>z</tt> decreases (in px) from its maximum possible value (<tt>nyz</tt>) to equal the number of ms that the mouse was depressed, but preventing the <tt>z</tt>-value from ever bringing the planet too close to the user.  This requires three things:
 1) For best user experience, the mouseDown event-handler must measure apparent lateral coordinates (<tt>X</tt>, <tt>Y</tt>) as opposed to actual lateral coordinates (<tt>x</tt>, <tt>y</tt>).  (Otherwise the planet's apparent lateral position will change while the button is depressed, which is very distracting.)
 2) A useEffect equipped with a setInterval invocation measures time since the mouseDown and continuously adjusts <tt>z</tt> (and <tt>x</tt> and <tt>y</tt>) for the new planet.
 3) A mouseUp event-handler stops the timing process for each planet.
-Below are these three pieces of code, modified as described above but also with a few other adjustments.
+
+Below are these three pieces of code, modified as described above but also with a few other minor adjustments.
 ```
 const handleDown = e => {
     // disable event listener when enough points have been clicked
