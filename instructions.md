@@ -4,7 +4,7 @@ PAK's recipe (after creating a local repo):
 		from CLI: heroku git:remote -a APP-NAME
     every time thereafter (from CLI): git push heroku master
 
-John's header code for the generation of meta tags:
+John A's header code for the generation of meta tags:
   <meta charset="utf-8" />
   <meta property="og:title" content="goAlgo" />
   <meta property="og:image" content="./screen.png" />
