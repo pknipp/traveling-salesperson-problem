@@ -60,7 +60,7 @@ const setTowns = (n, nx, nyz, zMin, dim) => {
     return xs.map((x, i) => [x, ys[i], zs[i]]);
 }
 ```
-# Outer loop (route permutations)
+### Outer loop (route permutations)
 
 [return to "Contents"](#contents)
 
@@ -265,11 +265,10 @@ const handleDown = e => {
 }
 ```
 It is trickier to enable the user to specify the <tt>z-</tt> coordinate for the 3-d case.  I opted to accomplish this by allowing a decrease of <tt>z</tt> to mirror the passage of time.  Specifically, the app measures the amount of time that the user presses the mouse down (before releasing it), and that sets the amount that <tt>z</tt> decreases (in px) from its maximum possible value (<tt>nyz</tt>) to equal the number of ms that the mouse was depressed, but preventing the <tt>z</tt>-value from ever bringing the planet too close to the user.  This requires three things:
-1) For best user experience, the mouseDown event-handler must measure apparent lateral coordinates (<tt>X</tt>, <tt>Y</tt>) as opposed to actual lateral coordinates (<tt>x</tt>, <tt>y</tt>).
+1) For best user experience, the mouseDown event-handler must measure apparent lateral coordinates (<tt>X</tt>, <tt>Y</tt>) as opposed to actual lateral coordinates (<tt>x</tt>, <tt>y</tt>).  (Otherwise the planet's apparent lateral position will change while the button is depressed, which is very distracting.)
 2) A useEffect equipped with a setInterval invocation measures time since the mouseDown and continuously adjusts <tt>z</tt> (and <tt>x</tt> and <tt>y</tt>) for the new planet.
 3) A mouseUp event-handler stops the timing process for each planet.
 Below are these three pieces of code, modified as described above but also with a few other adjustments.
-1)
 ```
 const handleDown = e => {
     // disable event listener when enough points have been clicked
