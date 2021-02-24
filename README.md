@@ -4,15 +4,15 @@
 
 [Geometry](#geometry)
 
-[Outer loop (route permutations)](#outer%20loop%20(route%20permutations))
+[Outer loop (route permutations)](#outer-loop-route-permutations))
 
-[Inner loop (towns in route)](#inner-loop-(towns-in-route))
+[Inner loop (towns in route)](#inner-loop-towns-in-route)
 
-[Rendering a town/planet](#rendering-a-town/planet)
+[Rendering a town/planet](#rendering-a-townplanet)
 
-[Rendering a route](#rendering-a-route-between-two-towns/planets)
+[Rendering a route](#rendering-a-route-between-two-townsplanets)
 
-[Inputting coordinates of a town/planet](#inputting-coordinates-of-a-town/planet)
+[Inputting coordinates of a town/planet](#inputting-coordinates-of-a-townplanet)
 
 The [traveling salesperson problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) (TSP) is a classic [*NP*-hard](https://en.wikipedia.org/wiki/NP-hardness) optimization problem in computer science, in which a fixed set of points ("towns") must be connected by a path which is as short as possible. My app uses JavaScript to construct a brute-force TSP solution and which uses React to render the results.
 I used this [skeleton](https://github.com/mars/create-react-app-buildpack#user-content-quick-start) for my front-end project.  Although the classic TSP involves a two-dimensional region, I've inserted the option for the user to do it for a three dimensional one, in which case I refer to the points as planets rather than towns.  The dimensionality of the problem does not affect the algorithm for determining the optimal path, but it does affect the selection of the point-coordinates and the rendering of the routes.
@@ -60,7 +60,7 @@ const setTowns = (n, nx, nyz, zMin, dim) => {
     return xs.map((x, i) => [x, ys[i], zs[i]]);
 }
 ```
-### Outer loop (route permutations)
+# Outer loop (route permutations)
 
 [return to "Contents"](#contents)
 
