@@ -202,9 +202,11 @@ const App = () => {
               <td>
                 <select value={dim} onChange={e => {
                   let newDim = Number(e.target.value);
+                  setN(0);
+                  setChoose(0);
                   setDim(newDim);
                   // This overrides default value of z = nyz.
-                  if (newDim === 2) setXyzs([[nx / 2, nyz / 2, 3 * nyz / 4]]);
+                  setXyzs([[nx / 2, nyz / 2, nyz * (newDim === 2 ? 0.75 : 1)]]);
                 }}>
                   {['2d or 3d?', '2-dim', '3-dim'].map((option, i) => <option key={i} value={i}>{option} </option>)}
                 </select>&nbsp;
@@ -222,7 +224,10 @@ const App = () => {
             {!dim ? null : <tr>
               <td>
                 <input type="number" min="0" step="1" value={n}
-                  onChange={e => setN(Number(e.target.value))}
+                  onChange={e => {
+                    setChoose(0);
+                    setN(Number(e.target.value));
+                  }}
                 />&nbsp;
               </td>
               <td style={{whiteSpace: "nowrap"}}>
