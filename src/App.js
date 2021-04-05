@@ -193,7 +193,7 @@ const App = () => {
         <p align="center"><h1>Traveling Salesperson Problem</h1></p>
         <p>
           In this classical NP-hard computing problem, a salesperson plans a route which enables him/her to leave home and visit all <i>N</i> points in that region while traveling the shortest possible distance.  You may implement this planning algorithm either in two dimensions (the traditional problem) or in three (as for a galactic salesperson who visits different planets).
-          Each control below has a place where you can click '<img src={info} alt="Show information." />/<img src={cancel} alt="Hide information." />' in order to toggle the display of information about the particular control.
+          Each control below has a place where you can click '<img src={info} alt="Show information." />/<img src={cancel} alt="Hide information."/>' in order to toggle the display of information about the particular control.
         </p>
         <table>
           <thead><tr></tr></thead>
@@ -295,47 +295,50 @@ const App = () => {
           }
         </div>
 
-        <div className="right"
-          style={{height:`${nyz}px`, width: `${nx}px`}}
-          // onClick={handleClick}
-          onMouseDown={handleDown}
-          onMouseUp={handleUp}
-        >
-          {xyzs.map((xyz, index) => (
-            <>
-              <Dot key={index} x={xyz[0]} y={xyz[1]} z={xyz[2]} d={d} nx={nx} nyz={nyz} />
-              <Dot key={"dashed" + index} x={xyz[0]} y={xyz[1]} z={xyz[2]} d={d} nx={nx} nyz={nyz} dashed={true}/>
-            </>
-          ))}
-          {!start ? null : itin.map((townIndex, itinIndex) => {
-            return (itinIndex === itin.length - 1) ? null :
+        <div>
+          <div className="right"
+            style={{height:`${nyz}px`, width: `${nx}px`}}
+            // onClick={handleClick}
+            onMouseDown={handleDown}
+            onMouseUp={handleUp}
+          >
+            {xyzs.map((xyz, index) => (
               <>
-                <Line key={'bot' + townIndex + ' ' + itin[itinIndex + 1]}
-                  d={d} nx={nx} nyz={nyz}
-                  xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
-                  yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
-                  zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
-                />
-                <Line key={'top' + townIndex + ' ' + itin[0][itinIndex + 1]}
-                  d={d} which={true} nx={nx} nyz={nyz}
-                  xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
-                  yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
-                  zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
-                />
-                <Line key={'dashedbot' + townIndex + ' ' + itin[0][itinIndex + 1]}
-                  d={d} nx={nx} nyz={nyz} dashed={true}
-                  xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
-                  yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
-                  zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
-                />
-                <Line key={'dashedtop' + townIndex + ' ' + itin[0][itinIndex + 1]}
-                  d={d} which={true} nx={nx} nyz={nyz} dashed={true}
-                  xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
-                  yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
-                  zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
-                />
+                <Dot key={index} x={xyz[0]} y={xyz[1]} z={xyz[2]} d={d} nx={nx} nyz={nyz} />
+                <Dot key={"dashed" + index} x={xyz[0]} y={xyz[1]} z={xyz[2]} d={d} nx={nx} nyz= {nyz} dashed={true}/>
               </>
-          })}
+            ))}
+            {!start ? null : itin.map((townIndex, itinIndex) => {
+              return (itinIndex === itin.length - 1) ? null :
+                <>
+                  <Line key={'bot' + townIndex + ' ' + itin[itinIndex + 1]}
+                    d={d} nx={nx} nyz={nyz}
+                    xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
+                    yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
+                    zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
+                  />
+                  <Line key={'top' + townIndex + ' ' + itin[0][itinIndex + 1]}
+                    d={d} which={true} nx={nx} nyz={nyz}
+                    xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
+                    yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
+                    zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
+                  />
+                  <Line key={'dashedbot' + townIndex + ' ' + itin[0][itinIndex + 1]}
+                    d={d} nx={nx} nyz={nyz} dashed={true}
+                    xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
+                    yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
+                    zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
+                  />
+                  <Line key={'dashedtop' + townIndex + ' ' + itin[0][itinIndex + 1]}
+                    d={d} which={true} nx={nx} nyz={nyz} dashed={true}
+                    xi={xyzs[townIndex][0]} xf={xyzs[itin[itinIndex + 1]][0]}
+                    yi={xyzs[townIndex][1]} yf={xyzs[itin[itinIndex + 1]][1]}
+                    zi={xyzs[townIndex][2]} zf={xyzs[itin[itinIndex + 1]][2]}
+                  />
+                </>
+            })}
+          </div>
+          creator: <a href="https://pknipp.github.io/" target="_blank">Peter Knipp</a>
         </div>
       </div>
     </>
