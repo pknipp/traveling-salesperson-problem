@@ -338,7 +338,7 @@ const App = () => {
                 </>
             })}
           </div>
-          creator: <a href="https://pknipp.github.io/" target="_blank">Peter Knipp</a>
+          creator: <a href="https://pknipp.github.io/" target="_blank" rel="noreferrer">Peter Knipp</a>
         </div>
       </div>
     </>
