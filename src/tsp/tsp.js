@@ -13,6 +13,8 @@ const tsp = (n, i = 0, distanceMin = [Infinity]) => {
   let done = false;
   let start = false;
   let memo = [];
+  let usedMemo = 0;
+  let totalCalc = 0;
   // loop over all permutations (ie, all possible itineraries)
   for(let iterPerm = iterPermI; iterPerm < facPerm; iterPerm ++){
     // salesperson starts at origin, which (xys[n][0], xys[n][1]) is defined to be.
@@ -23,9 +25,12 @@ const tsp = (n, i = 0, distanceMin = [Infinity]) => {
     let newItin = facToItin(n, iter);
     // flag used to determine whether or not memo can be used
     let areSame = true;
-    for (const index of newItin) {
+    for (let i = 0; i < newItin.length; i++) {
+      const index = newItin[i];
       areSame = areSame && memo[i] && memo[i][0] === index;
       // ... if existing element in memo cannot be used, then reassign it
+      totalCalc++;
+      if (areSame) usedMemo++;
       if (!areSame) memo[i] = [index, distanceTot + interTownDistances[indexLast][index]];
       distanceTot = memo[i][1];
       indexLast = index;
@@ -55,8 +60,9 @@ const tsp = (n, i = 0, distanceMin = [Infinity]) => {
       // setNextIterPermI(iterPerm);
     // }
   }
+  console.log("used memo ", Math.floor(100 * usedMemo / totalCalc), "% of the time");
 }
 
-console.log(tsp(11));
+console.log(tsp(12));
 
 module.exports = tsp;
