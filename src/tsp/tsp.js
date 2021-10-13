@@ -1,7 +1,6 @@
 let setTowns = require('./setTowns');
 let lookup = require('./lookup');
-
-
+let facToItin = require('./facToItin');
 
 const tsp = (n, i = 0, distanceMin = [Infinity]) => {
   let xys = [...setTowns(n), [0, 0]];
@@ -20,30 +19,18 @@ const tsp = (n, i = 0, distanceMin = [Infinity]) => {
     let indexLast = n;
     let distanceTot = 0;
     let iter = iterPerm;
-    // range = [0, 1, 2, ...], which is used to generate permutations
-    let range = new Array(n).fill(0).map((blah, i) => i);
     // let dIter = Math.round(facPerm/1000);
-    let fac = facPerm;
-    let newItin = [];
+    let newItin = facToItin(n, iter);
     // flag used to determine whether or not memo can be used
     // let areSame = true;
-    // determination of digits of factorial-base representation of iterPerm
-
-    for(let place = n - 1; place >= 0; place --){
-      let i = n - 1 - place;
-      fac /= (place + 1);
-      let digit = Math.floor(iter/fac);
-      let index = range.splice(digit,1)[0];
-      newItin.push(index);
+    for (const index of newItin) {
       // areSame = areSame && memo[i] && memo[i][0] === index;
       // ... if existing element in memo cannot be used, then reassign it
       // if (!areSame) memo[i] = [index, distanceTot + interTownDistances[indexLast][index]];
       distanceTot += interTownDistances[indexLast][index];
       // distanceTot = memo[i][1];
-      iter -= digit * fac;
       indexLast = index;
     }
-    // console.log(iterPerm, newItin);
     // salesperson ends at the origin, which (xys[n][0], xys[n][1]) is defined to be.
     distanceTot += interTownDistances[indexLast][n];
     newItin.unshift(n);
