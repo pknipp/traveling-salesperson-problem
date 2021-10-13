@@ -22,13 +22,12 @@ const tsp = (n, i = 0, distanceMin = [Infinity]) => {
     // let dIter = Math.round(facPerm/1000);
     let newItin = facToItin(n, iter);
     // flag used to determine whether or not memo can be used
-    // let areSame = true;
+    let areSame = true;
     for (const index of newItin) {
-      // areSame = areSame && memo[i] && memo[i][0] === index;
+      areSame = areSame && memo[i] && memo[i][0] === index;
       // ... if existing element in memo cannot be used, then reassign it
-      // if (!areSame) memo[i] = [index, distanceTot + interTownDistances[indexLast][index]];
-      distanceTot += interTownDistances[indexLast][index];
-      // distanceTot = memo[i][1];
+      if (!areSame) memo[i] = [index, distanceTot + interTownDistances[indexLast][index]];
+      distanceTot = memo[i][1];
       indexLast = index;
     }
     // salesperson ends at the origin, which (xys[n][0], xys[n][1]) is defined to be.
@@ -38,7 +37,7 @@ const tsp = (n, i = 0, distanceMin = [Infinity]) => {
     if (distanceTot < distanceMin[0]) {
       // Replace the existing itinerary with the current one
       itin = [...newItin];
-      console.log(newItin.join("/"), distanceTot);
+      console.log(newItin.join("-"), distanceTot);
       distanceMin = [distanceTot, ...distanceMin];
       nextIterPermI = iterPerm + 1;
       // setMemo(newMemo);
